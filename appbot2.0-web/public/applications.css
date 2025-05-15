@@ -1,0 +1,80 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    margin: 2rem;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #00bcd4;
+  }
+  
+  /* Applications Table */
+  .app-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    max-width: 900px;
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  
+  .app-table th, .app-table td {
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  .app-table th {
+    background-color: #383838;
+    font-size: 1rem;
+    color: #cccccc;
+  }
+  
+  .app-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+  }
+  
+  .app-table tr:hover {
+    background-color: #3a3a3a;
+  }
+  
+  .view-btn {
+    padding: 6px 12px;
+    background-color: #3f51b5;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  
+  .view-btn:hover {
+    background-color: #5c6bc0;
+  }
+  
+  /* Application Detail Page */
+  .question-block {
+    background-color: #2a2a2a;
+    padding: 1rem;
+    margin: 1rem auto;
+    max-width: 900px;
+    border-left: 4px solid #00bcd4;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  
+  .question-block h3 {
+    margin-bottom: 0.5rem;
+    color: #ffca28;
+  }
+  
+  .metrics {
+    font-size: 0.85rem;
+    color: #aaaaaa;
+    margin-top: 0.5rem;
+  }
+  

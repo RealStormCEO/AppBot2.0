@@ -1,0 +1,10 @@
+<link rel="stylesheet" href="/applications.css">
+<h1>📄 Application for <%= app.username %></h1>
+
+<% Object.entries(JSON.parse(app.responses)).forEach(([question, answer], i) => { %>
+  <div class="question-block">
+    <h3>❓ <%= i+1 %>. <%= question %></h3>
+    <p><%= answer %></p>
+    <p class="metrics">✍️ Words: <%= answer.split(/\s+/).length %> | 🔡 Characters: <%= answer.length %></p>
+  </div>
+<% }) %>

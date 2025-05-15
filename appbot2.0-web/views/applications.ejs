@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="/applications.css">
+<h1>📄 Applications</h1>
+<table class="app-table">
+    <tr><th>User</th><th>AI Score</th><th>Submitted</th><th></th></tr>
+    <% apps.forEach(app => { %>
+      <tr>
+        <td><%= app.username %></td>
+        <td><%= (app.ai_score * 100).toFixed(1) %>% human</td>
+        <td><%= app.nyTime %></td>
+        <td><a href="/applications/<%= app.id %>" class="view-btn">🔍 View</a></td>
+      </tr>
+    <% }) %>
+  </table>
