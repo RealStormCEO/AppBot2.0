@@ -1,0 +1,43 @@
+<link rel="stylesheet" href="/dashboard.css">
+<script src="/js/order.js" defer></script>
+<%- include('partials/navbar') %>
+
+<div class="dashboard-wrapper">
+  <aside class="sidebar">
+    <h2 class="sidebar-title">📝 Form Builder</h2>
+    <ul class="nav-list">
+        <a href="/dashboard" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+          </a>                   
+    </ul>
+  </aside>
+
+  <main class="dashboard-content">
+    <h1>📄 Editing: <%= form.title %></h1>
+
+    <section class="questions-section">
+      <h2>📋 Questions</h2>
+      <ul class="question-list" id="sortable-list">
+        <% questions.forEach(q => { %>
+          <li class="question-item" data-id="<%= q.id %>">
+            <span class="drag-icon">☰</span>
+            <span class="question-text"><%= q.question %></span>
+            <form action="/dashboard/forms/<%= form.id %>/delete-question" method="POST">
+              <input type="hidden" name="id" value="<%= q.id %>">
+              <button class="delete-btn" type="submit">🗑️</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+      <button id="save-order" class="save-order-btn">💾 Save Order</button>
+    </section>
+
+    <section class="add-question">
+      <h2>➕ Add a New Question</h2>
+      <form action="/dashboard/forms/<%= form.id %>/add-question" method="POST" class="question-form">
+        <input name="question" placeholder="Enter a new question..." required>
+        <button type="submit">Add</button>
+      </form>
+    </section>
+  </main>
+</div>

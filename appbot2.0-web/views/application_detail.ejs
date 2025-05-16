@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="/applications.css">
+<%- include('partials/navbar') %>
+
 <h1>📄 Application for <%= app.username %></h1>
 
 <% Object.entries(JSON.parse(app.responses)).forEach(([question, answer], i) => { %>

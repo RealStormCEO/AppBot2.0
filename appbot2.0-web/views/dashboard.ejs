@@ -1,35 +1,62 @@
 <link rel="stylesheet" href="/dashboard.css">
-<script src="/js/order.js" defer></script>
+<script src="/js/forms.js" defer></script>
 <%- include('partials/navbar') %>
 
-<div class="dashboard-container">
-  <header>
-    <h1>🛠️ Application Dashboard</h1>
-    <p class="welcome">Welcome, <%= user.username %>!</p>
-  </header>
-
-  <section class="questions-section">
-    <h2>📋 Current Questions</h2>
-    <ul class="question-list" id="sortable-list">
-      <% questions.forEach(q => { %>
-        <li class="question-item" data-id="<%= q.id %>">
-          <span class="drag-icon">☰</span>
-          <span class="question-text"><%= q.question %></span>
-          <form action="/dashboard/delete-question" method="POST">
-            <input type="hidden" name="id" value="<%= q.id %>">
-            <button class="delete-btn" type="submit">🗑️</button>
-          </form>
-        </li>
-      <% }) %>
+<div class="dashboard-wrapper">
+  <aside class="sidebar">
+    <h2 class="sidebar-title">⚙️ Admin Panel</h2>
+    <ul class="nav-list">
+      <li class="nav-item active" data-tab="forms">📁 Application Forms</li>
+      <li class="nav-item" data-tab="settings">⚙️ Settings</li>
     </ul>
-    <button id="save-order" class="save-order-btn">💾 Save Order</button>
-  </section>
+  </aside>
 
-  <section class="add-question">
-    <h2>➕ Add a New Question</h2>
-    <form method="POST" action="/dashboard/add-question" class="question-form">
-      <input name="question" placeholder="Enter a new question..." required>
-      <button type="submit">Add</button>
-    </form>
-  </section>
+  <main class="dashboard-content">
+    <!-- Forms Tab -->
+    <section id="forms" class="dashboard-tab">
+      <h1>📁 Application Forms</h1>
+      <form method="POST" action="/dashboard/forms/create" class="create-form">
+        <input name="title" placeholder="New application name..." required />
+        <button type="submit">➕ Create</button>
+      </form>
+
+      <% if (forms.length === 0) { %>
+        <p class="no-forms-msg">No application forms yet. Create one above to get started.</p>
+      <% } else { %>
+        <ul class="form-list">
+          <% forms.forEach(form => { %>
+            <li class="form-item">
+                <div class="form-title">📄 <strong><%= form.title %></strong></div>
+                <div class="action-buttons">
+                  <a href="/dashboard/forms/<%= form.id %>" class="icon-btn" title="Edit">✏️</a>
+                  <form action="/dashboard/forms/<%= form.id %>/delete" method="POST" onsubmit="return confirm('Delete this form?');" class="delete-form">
+                    <button type="submit" class="icon-btn" title="Delete">🗑️</button>
+                  </form>
+                </div>
+              </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </section>
+
+    <!-- Settings Tab -->
+    <section id="settings" class="dashboard-tab hidden">
+      <h1>⚙️ Settings</h1>
+      <p>This area is under construction. Settings will appear here soon.</p>
+    </section>
+  </main>
 </div>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
+
+      item.classList.add('active');
+      const tabId = item.getAttribute('data-tab');
+      document.getElementById(tabId).classList.remove('hidden');
+    });
+  });
+</script>
