@@ -2,14 +2,181 @@
 <%- include('partials/navbar') %>
 
 <h1>📄 Applications</h1>
-<table class="app-table">
-    <tr><th>User</th><th>AI Score</th><th>Submitted</th><th></th></tr>
-    <% apps.forEach(app => { %>
+<form id="bulkActionForm" method="POST" action="/applications/bulk-action">
+  <table class="app-table">
+    <thead>
       <tr>
-        <td><%= app.username %></td>
-        <td><%= (app.ai_score * 100).toFixed(1) %>% human</td>
-        <td><%= app.nyTime %></td>
-        <td><a href="/applications/<%= app.id %>" class="view-btn">🔍 View</a></td>
+        <th>
+          <input type="checkbox" id="select-all" />
+        </th>
+        <th>User</th>
+        <th>AI Score</th>
+        <th>Submitted</th>
+        <th>Status</th>
+        <th>Actions</th>
       </tr>
-    <% }) %>
+    </thead>
+    <tbody>
+      <% apps.forEach(app => { %>
+        <tr>
+          <td>
+            <input type="checkbox" name="selectedApps" value="<%= app.id %>" class="app-checkbox" />
+          </td>
+          <td><%= app.username %></td>
+          <td><%= (app.ai_score * 100).toFixed(1) %>% human</td>
+          <td><%= app.nyTime %></td>
+          <td>
+            <% let status = parseInt(app.application_status); %>
+            <% if (status === 1) { %>
+              <span class="status pending">🟡 Pending</span>
+            <% } else if (status === 2) { %>
+              <span class="status approved">🟢 Approved</span>
+            <% } else if (status === 3) { %>
+              <span class="status rejected">🔴 Denied</span>
+            <% } else { %>
+              <span class="status">❔ Unknown</span>
+            <% } %>
+          </td>
+          <td>
+            <div class="action-wrapper">
+              <a href="/applications/<%= app.id %>" class="icon-btn view" title="View">🔍</a>
+              <form action="/applications/<%= app.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this application?');">
+                <button type="submit" class="icon-btn delete" title="Delete">🗑️</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
   </table>
+</form>
+
+<style>
+  .app-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 6px; /* Adds space between rows instead of padding */
+    table-layout: fixed;
+  }
+
+  .app-table th,
+  .app-table td {
+    padding: 8px 10px;         /* Shrinks vertical padding */
+    text-align: center;
+    vertical-align: middle;    /* Centers vertically */
+    white-space: nowrap;
+    height: 40px;              /* Optional: Enforces row height */
+  }
+
+  .app-table th {
+    background-color: #333;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .app-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+  }
+
+  .app-table tr:nth-child(odd) {
+    background-color: #1f1f1f;
+  }
+
+  .app-table th:nth-child(1),
+.app-table td:nth-child(1) {
+  width: 220px;  /* User */
+}
+.app-table th:nth-child(2),
+.app-table td:nth-child(2) {
+  width: 130px;  /* AI Score */
+}
+.app-table th:nth-child(3),
+.app-table td:nth-child(3) {
+  width: 180px;  /* Submitted */
+}
+.app-table th:nth-child(4),
+.app-table td:nth-child(4) {
+  width: 140px;  /* Status */
+}
+.app-table th:nth-child(5),
+.app-table td:nth-child(5) {
+  width: 120px;  /* Actions */
+}
+
+.action-wrapper {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  padding: 6px 10px;
+  height: 36px;
+  width: 36px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.icon-btn.view {
+  background-color: #3498db;
+  color: white;
+}
+
+.icon-btn.view:hover {
+  background-color: #2980b9;
+}
+
+.icon-btn.delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.icon-btn.delete:hover {
+  background-color: #c0392b;
+}
+
+/* Remove any default form/button spacing */
+.action-wrapper form {
+  margin: 0;
+  padding: 0;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status.pending { color: #f1c40f; }
+.status.approved { color: #2ecc71; }
+.status.rejected { color: #e74c3c; }
+
+/* Limit checkbox column width */
+.app-table th:first-child,
+.app-table td:first-child {
+  width: 40px;
+  text-align: center;
+}
+
+/* Checkbox scale for better appearance */
+.app-table input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+  margin: 0 auto;
+}
+</style>
+
+
+<script>
+  document.getElementById('select-all').addEventListener('change', function () {
+    const checkboxes = document.querySelectorAll('.app-checkbox');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+  });
+</script>

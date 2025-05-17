@@ -237,6 +237,15 @@ body {
   .nav-btn.logout:hover {
     background-color: #d44;
   }
+
+  .nav-btn.btn-dev {
+    background-color: #9b59b6;
+    color: white;
+  }
+  
+  .nav-btn.btn-dev:hover {
+    background-color: #8e44ad;
+  }  
   
   /* ========== SERVER SELECT ========== */
   .server-select-container {

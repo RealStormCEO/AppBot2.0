@@ -277,7 +277,7 @@ router.post('/dashboard/delete-question', isAuthenticated, isStaff, async (req, 
 // List all applications
 router.get('/applications', isAuthenticated, isStaff, async (req, res) => {
     const [apps] = await db.execute(
-      'SELECT id, username, ai_score, created_at FROM applications WHERE guild_id = ? ORDER BY created_at DESC',
+      'SELECT id, username, ai_score, created_at, application_status FROM applications WHERE guild_id = ? ORDER BY created_at DESC',
       [getSelectedGuildId(req)]
     );
   
