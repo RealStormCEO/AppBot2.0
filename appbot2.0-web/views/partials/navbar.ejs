@@ -1,19 +1,22 @@
 <link rel="stylesheet" href="/dashboard.css">
 
+<!-- Top Navbar -->
 <nav class="navbar">
   <div class="nav-left">
     <a href="/dashboard" class="navbar-brand">AppBot2.0</a>
   </div>
   <div class="nav-right">
-    <a href="/applications" class="nav-btn btn-secondary">📨 Applications</a>
-    <a href="/switch-server" class="nav-btn btn-secondary">🔁 Switch Server</a>
-
-    <% if (typeof showDevPanel !== 'undefined' && showDevPanel) { %>
-      <a href="/developer/dashboard" class="nav-btn btn-dev">🛠️ Dev Panel</a>
-    <% } %>
-
-    <form action="/logout" method="GET" style="display: inline;">
-      <button class="nav-btn btn-danger">🚪 Logout</button>
-    </form>
+    <div class="profile-container" onclick="toggleDropdown(event)">
+      <img src="<%= user?.avatarUrl %>" alt="Profile" class="profile-image" />
+      <div class="dropdown" id="profileDropdown">
+        <a href="/switch-server">🔁 Switch Server</a>
+        <% if (typeof showDevPanel !== 'undefined' && showDevPanel) { %>
+          <a href="/developer/dashboard">🛠️ Dev Panel</a>
+        <% } %>
+        <form action="/logout" method="GET">
+          <button type="submit">🚪 Logout</button>
+        </form>
+      </div>
+    </div>
   </div>
 </nav>

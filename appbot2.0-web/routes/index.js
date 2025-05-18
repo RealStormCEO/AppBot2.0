@@ -6,7 +6,7 @@ const moment = require('moment-timezone');
 
 // Guild you're managing applications for
 function getSelectedGuildId(req) {
-    return req.session.guildId || '1296323796281856041'; // default fallback
+    return req.session.guildId;
   }  
 
 // Middleware to check if user is authenticated
@@ -33,7 +33,18 @@ router.get('/login', passport.authenticate('discord'));
 
 router.get('/auth/discord/callback',
   passport.authenticate('discord', { failureRedirect: '/' }),
-  (req, res) => res.redirect('/servers')
+  (req, res) => {
+    if (req.user) {
+      const avatarUrl = `https://cdn.discordapp.com/avatars/${req.user.id}/${req.user.avatar}.png`;
+      req.session.user = {
+        id: req.user.id,
+        username: req.user.username,
+        discriminator: req.user.discriminator,
+        avatarUrl
+      };
+    }
+    res.redirect('/servers');
+  }
 );
 
 router.get('/logout', (req, res, next) => {
@@ -43,7 +54,7 @@ router.get('/logout', (req, res, next) => {
         res.redirect('/');
       });
     });
-  });  
+  });
 
 // 🌐 Show list of servers
 router.get('/servers', isAuthenticated, (req, res) => {
@@ -273,6 +284,7 @@ router.post('/dashboard/delete-question', isAuthenticated, isStaff, async (req, 
       res.status(500).send('Failed to delete form.');
     }
   });  
+  
 
 // List all applications
 router.get('/applications', isAuthenticated, isStaff, async (req, res) => {
@@ -286,8 +298,13 @@ router.get('/applications', isAuthenticated, isStaff, async (req, res) => {
       ...app,
       nyTime: moment(app.created_at).tz('America/New_York').format('MMM D, YYYY h:mm A')
     }));
-  
-    res.render('applications', { user: req.user, apps: appsWithTime });
+
+    res.render('applications', {
+      user: req.user,
+      apps: appsWithTime,
+      showDevPanel: res.locals.showDevPanel, // ✅ explicitly pass it in
+      layout: 'layout'
+    });
   });
   
   // View single application

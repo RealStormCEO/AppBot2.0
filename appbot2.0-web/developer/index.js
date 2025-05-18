@@ -98,4 +98,37 @@ router.post('/users/:id/delete', isDevUser, async (req, res) => {
   res.redirect('/developer/users');
 });
 
+// List servers
+router.get('/servers', isDevUser, async (req, res) => {
+  const [servers] = await db.execute('SELECT * FROM guilds');
+  res.render('developer/servers', { user: req.user, servers });
+});
+
+// Edit page (render)
+router.get('/servers/:id/edit', isDevUser, async (req, res) => {
+  const [rows] = await db.execute('SELECT * FROM guilds WHERE id = ?', [req.params.id]);
+  const server = rows[0];
+  if (!server) return res.status(404).send('Server not found');
+  res.render('developer/edit-server', { server });
+});
+
+// Update server (post)
+router.post('/servers/:id/edit', isDevUser, async (req, res) => {
+  const { name, icon, joined_at } = req.body;
+  await db.execute('UPDATE guilds SET name = ?, icon = ?, joined_at = ? WHERE id = ?', [
+    name,
+    icon || null,
+    joined_at,
+    req.params.id
+  ]);
+  res.redirect('/developer/servers');
+});
+
+// Delete
+router.post('/servers/:id/delete', isDevUser, async (req, res) => {
+  await db.execute('DELETE FROM guilds WHERE id = ?', [req.params.id]);
+  res.redirect('/developer/servers');
+});
+
+
 module.exports = router;

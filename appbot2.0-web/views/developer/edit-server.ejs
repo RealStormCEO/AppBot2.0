@@ -1,0 +1,37 @@
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/developer/users.css">
+
+<div class="dev-wrapper">
+  <aside class="dev-sidebar">
+    <h2>🛠️ Dev Panel</h2>
+    <ul>
+      <li><a href="/developer/dashboard">📊 Dashboard</a></li>
+      <li><a href="/developer/servers">🌐 Servers</a></li>
+      <li><a href="/developer/users">👥 Users</a></li>
+      <li><a href="/developer/dev-users">🔑 Dev Users</a></li>
+      <li><a href="/dashboard">↩️ Back to User Panel</a></li>
+    </ul>
+  </aside>
+
+  <main class="dev-content">
+    <div class="dev-header">
+        <h1>✏️ Edit Server</h1>
+      </div>      
+
+    <div class="dev-container">
+      <form action="/developer/servers/<%= server.id %>/edit" method="POST" class="form-card">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" value="<%= server.name %>" required>
+
+        <label for="icon">Icon</label>
+        <input type="text" id="icon" name="icon" value="<%= server.icon || '' %>">
+
+        <label for="joined_at">Joined At</label>
+        <input type="datetime-local" id="joined_at" name="joined_at" 
+               value="<%= new Date(server.joined_at).toISOString().slice(0, 16) %>">
+
+        <button type="submit">💾 Save Changes</button>
+      </form>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AppBot2.0</title>
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="/dashboard" class="navbar-brand">AppBot2.0</a>
+    </div>
+    <div class="nav-right">
+      <div class="profile-container" onclick="toggleDropdown()">
+        <img src="<%= user?.avatarUrl %>" alt="Profile" class="profile-image" />
+        <div class="dropdown" id="profileDropdown">
+          <a href="/switch-server">🔁 Switch Server</a>
+          <% if (showDevPanel) { %>
+            <a href="/developer/dashboard">🛠️ Dev Panel</a>
+          <% } %>
+          <form action="/logout" method="GET">
+            <button type="submit">🚪 Logout</button>
+          </form>
+        </div>
+      </div>      
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2 class="sidebar-title">⚙️ Admin Panel</h2>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="/dashboard">📁 Application Forms</a></li>
+        <li class="nav-item"><a href="/applications">📨 Applications</a></li>
+        <li class="nav-item"><a href="/dashboard/settings">⚙️ Settings</a></li>
+      </ul>
+    </aside>
+
+    <!-- Dynamic Page Content -->
+    <main class="dashboard-content">
+      <%- body %>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script>
+    function toggleDropdown(event) {
+      event.stopPropagation(); // Prevent global window click from firing
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = (dropdown.style.display === 'flex') ? 'none' : 'flex';
+    }
+  
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function (e) {
+      const dropdown = document.getElementById('profileDropdown');
+      const profile = document.querySelector('.profile-container');
+      if (!profile.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>  
+
+</body>
+</html>
