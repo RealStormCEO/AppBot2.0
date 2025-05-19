@@ -1,0 +1,68 @@
+/* app/login/Login.module.css */
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1e1f22;
+}
+
+.card {
+  background-color: #2b2d31;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 100%;
+  max-width: 420px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ This centers all children horizontally */
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  color: #b0b3b8;
+}
+
+.discordButton {
+  background-color: #5865F2;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  /* Optional: make sure it's not too tight */
+  min-width: 200px;
+}
+
+.discordButton img {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+}
+
+.discordButton:hover {
+  background-color: #4752c4;
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #5865F2;
+}

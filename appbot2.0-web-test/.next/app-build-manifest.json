@@ -1,0 +1,40 @@
+{
+  "pages": {
+    "/(with-nav)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(with-nav)/layout.css",
+      "static/chunks/app/(with-nav)/layout.js"
+    ],
+    "/(with-nav)/dashboard/[guild_id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(with-nav)/dashboard/[guild_id]/page.css",
+      "static/chunks/app/(with-nav)/dashboard/[guild_id]/page.js"
+    ],
+    "/(with-nav)/dashboard/[guild_id]/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(with-nav)/dashboard/[guild_id]/layout.css",
+      "static/chunks/app/(with-nav)/dashboard/[guild_id]/layout.js"
+    ],
+    "/(no-nav)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(no-nav)/layout.css",
+      "static/chunks/app/(no-nav)/layout.js"
+    ],
+    "/(no-nav)/servers/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(no-nav)/servers/page.css",
+      "static/chunks/app/(no-nav)/servers/page.js"
+    ],
+    "/(no-nav)/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(no-nav)/login/page.css",
+      "static/chunks/app/(no-nav)/login/page.js"
+    ]
+  }
+}
