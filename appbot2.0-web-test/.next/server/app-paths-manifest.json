@@ -1,9 +1,6 @@
 {
-  "/(no-nav)/servers/page": "app/(no-nav)/servers/page.js",
-  "/api/bot-guilds/route": "app/api/bot-guilds/route.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/forms/[guild_id]/route": "app/api/forms/[guild_id]/route.js",
-  "/api/is-dev-user/route": "app/api/is-dev-user/route.js",
-  "/(no-nav)/login/page": "app/(no-nav)/login/page.js",
-  "/(with-nav)/dashboard/[guild_id]/page": "app/(with-nav)/dashboard/[guild_id]/page.js"
+  "/api/forms/[guild_id]/questions/[form_id]/edit/route": "app/api/forms/[guild_id]/questions/[form_id]/edit/route.js",
+  "/api/forms/[guild_id]/questions/[form_id]/delete/route": "app/api/forms/[guild_id]/questions/[form_id]/delete/route.js",
+  "/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page": "app/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page.js"
 }

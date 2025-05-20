@@ -74,3 +74,36 @@
 .invite:hover {
   background-color: #379e6f;
 }
+
+/* Top Navbar (Brand only) */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem 2rem;
+  background-color: #2b2d31;
+  border-bottom: 1px solid #1a1b1e;
+  border-radius: 0 0 8px 8px;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logoImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 6px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+  object-fit: cover;
+}
+
+.brand {
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: #fff;
+}

@@ -59,40 +59,32 @@ export default function Topbar() {
   }
 
   return (
-    <div className={styles.topbar}>
-      <div className={styles.right}>
-        <div
-          className={styles.avatarWrapper}
-          onClick={() => setDropdownOpen(prev => !prev)}
-        >
-          <img
-            src={session.user.image}
-            alt="Profile"
-            className={styles.avatar}
-          />
-        </div>
+<div className={styles.topbar}>
+  {/* Left side: AppBot2.0 logo */}
+  <div className={styles.logoArea}>
+    <img src="/default-icon.jpg" alt="AppBot Logo" className={styles.logoImage} />
+    <span className={styles.brand}>AppBot2.0</span>
+  </div>
 
-        {dropdownOpen && (
-          <div className={styles.dropdown} ref={dropdownRef}>
-            {console.log('🔍 Rendering dropdown – isDev:', isDev)}
-
-            {isDev && (
-              <button
-                className={styles.devButton}
-                onClick={() => router.push('/developer')}
-              >
-                🛠 Developer Panel
-              </button>
-            )}
-            <button
-              className={styles.logout}
-              onClick={() => signOut({ callbackUrl: '/login' })}
-            >
-              📕 Log out
-            </button>
-          </div>
-        )}
-      </div>
+  {/* Right side: Avatar + Dropdown */}
+  <div className={styles.right}>
+    <div className={styles.avatarWrapper} onClick={() => setDropdownOpen(prev => !prev)}>
+      <img src={session.user.image} alt="Profile" className={styles.avatar} />
     </div>
+
+    {dropdownOpen && (
+      <div className={styles.dropdown} ref={dropdownRef}>
+        {isDev && (
+          <button className={styles.devButton} onClick={() => router.push('/developer')}>
+            🛠 Developer Panel
+          </button>
+        )}
+        <button className={styles.logout} onClick={() => signOut({ callbackUrl: '/home' })}>
+          📕 Log out
+        </button>
+      </div>
+    )}
+  </div>
+</div>
   )
 }

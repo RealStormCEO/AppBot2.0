@@ -22,6 +22,28 @@
   margin-right: 4rem; /* ✅ Push content in slightly */
 }
 
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logoImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 5px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  object-fit: cover;
+}
+
+.brand {
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
 .avatarWrapper {
   cursor: pointer;
   border-radius: 50%;

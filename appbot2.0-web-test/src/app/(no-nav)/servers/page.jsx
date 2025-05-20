@@ -20,7 +20,7 @@ export default function ServersPage() {
 
     useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/login')
+      router.push('/home')
     }
   }, [status, router])
 
