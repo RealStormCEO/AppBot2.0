@@ -1,0 +1,27 @@
+.sidebar {
+  width: 250px;
+  background-color: #2b2d31;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.link {
+  color: white;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.link:hover {
+  background-color: #3c3f45;
+}
+
+.active {
+  background-color: #5865f2; /* Discord-like accent */
+  color: white;
+  font-weight: 600;
+}

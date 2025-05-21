@@ -1,6 +1,1 @@
-{
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/forms/[guild_id]/questions/[form_id]/edit/route": "app/api/forms/[guild_id]/questions/[form_id]/edit/route.js",
-  "/api/forms/[guild_id]/questions/[form_id]/delete/route": "app/api/forms/[guild_id]/questions/[form_id]/delete/route.js",
-  "/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page": "app/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page.js"
-}
+{}

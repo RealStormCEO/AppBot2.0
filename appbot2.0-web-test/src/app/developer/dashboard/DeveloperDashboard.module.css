@@ -1,0 +1,31 @@
+.container {
+  padding: 2rem;
+  color: white;
+}
+
+.header {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.subtext {
+  margin-bottom: 2rem;
+}
+
+.statsGrid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.chartCard {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 250px;
+  height: 300px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

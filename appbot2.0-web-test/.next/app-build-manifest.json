@@ -1,22 +1,16 @@
 {
   "pages": {
-    "/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page": [
+    "/developer/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page.css",
-      "static/chunks/app/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page.js"
+      "static/css/app/developer/layout.css",
+      "static/chunks/app/developer/layout.js"
     ],
-    "/(with-nav)/dashboard/[guild_id]/layout": [
+    "/developer/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(with-nav)/dashboard/[guild_id]/layout.css",
-      "static/chunks/app/(with-nav)/dashboard/[guild_id]/layout.js"
-    ],
-    "/(with-nav)/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(with-nav)/layout.css",
-      "static/chunks/app/(with-nav)/layout.js"
+      "static/css/app/developer/dashboard/page.css",
+      "static/chunks/app/developer/dashboard/page.js"
     ]
   }
 }

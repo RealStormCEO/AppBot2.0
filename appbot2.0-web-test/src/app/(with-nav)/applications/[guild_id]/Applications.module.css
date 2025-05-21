@@ -1,0 +1,154 @@
+.wrapper {
+  margin-left: 260px;
+  padding: 2rem;
+  color: white;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr auto;
+  padding: 0.75rem 1rem;
+  background: #1c1e22;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #ccc;
+}
+
+.applicationList {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.applicationCard {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr auto;
+  align-items: center;
+  background-color: #2b2d31;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.iconButton,
+.iconButtonDelete {
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.iconButton {
+  background-color: #5865f2;
+  color: white;
+}
+
+.iconButtonDelete {
+  background-color: #f04747;
+  color: white;
+}
+
+.statusPending {
+  color: #f1c40f;
+}
+
+.statusAccepted {
+  color: #2ecc71;
+}
+
+.statusDenied {
+  color: #e74c3c;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.modal {
+  background: #2b2d31;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 90%;
+  margin: 10% auto;
+  color: white;
+}
+
+.modalButtons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.tableHeader span,
+.applicationCard span {
+  display: flex;
+  align-items: center;
+}
+
+.tableHeader span:nth-child(3),
+.applicationCard span:nth-child(3) {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.scoreColumn {
+  justify-content: center; /* or use 'flex-end' if you want right alignment */
+}
+
+.applicationCard span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.applicationCard span.scoreColumn {
+  justify-content: center; /* or flex-end */
+}
+
+.submittedColumn {
+  justify-content: flex-end; /* Pushes it to the right within the cell */
+}
+
+.applicationCard span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.applicationCard span.submittedColumn {
+  justify-content: flex-end;
+}
+
+/* Adjust Submitted column (3rd) */
+.tableHeader span:nth-child(3),
+.applicationCard span:nth-child(3) {
+  justify-content: flex-start;
+  padding-left: 130px;
+}
+
+/* Adjust Status column (4th) */
+.tableHeader span:nth-child(4),
+.applicationCard span:nth-child(4) {
+  justify-content: flex-start;
+  padding-left: 10px;
+}

@@ -1,0 +1,35 @@
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/app/developer/dashboard/DeveloperDashboard.module.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************/
+.DeveloperDashboard_container__0lLH9 {
+  padding: 2rem;
+  color: white;
+}
+
+.DeveloperDashboard_header__xEn63 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.DeveloperDashboard_subtext__dPb16 {
+  margin-bottom: 2rem;
+}
+
+.DeveloperDashboard_statsGrid__tYpzX {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.DeveloperDashboard_chartCard__7tBX4 {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 250px;
+  height: 300px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+

@@ -1,15 +1,16 @@
 'use client'
 import Link from 'next/link'
 import styles from './DashboardSidebar.module.css'
-import { usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 
-export default function DashboardSidebar({ guildId }) {
+export default function DashboardSidebar() {
+  const { guild_id } = useParams()
   const pathname = usePathname()
 
   const links = [
-    { href: `/dashboard/${guildId}`, label: '📋 Forms' },
-    { href: `/applications/${guildId}`, label: '📝 Applications' },
-    { href: `/settings/${guildId}`, label: '⚙️ Settings' }
+    { href: `/dashboard/${guild_id}`, label: '📋 Forms' },
+    { href: `/applications/${guild_id}`, label: '📝 Applications' },
+    { href: `/settings/${guild_id}`, label: '⚙️ Settings' }
   ]
 
   return (
@@ -18,7 +19,7 @@ export default function DashboardSidebar({ guildId }) {
         <Link
           key={link.href}
           href={link.href}
-          className={`${styles.link} ${pathname === link.href ? styles.active : ''}`}
+          className={`${styles.link} ${pathname.startsWith(link.href) ? styles.active : ''}`}
         >
           {link.label}
         </Link>
