@@ -1,0 +1,21 @@
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/app/(with-nav)/settings/[guild_id]/Settings.module.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************/
+.Settings_comingSoon__opra3 {
+  margin-left: 260px;
+  padding: 3rem 2rem 1rem;
+  color: white;
+}
+
+.Settings_comingSoon__opra3 h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.Settings_comingSoon__opra3 p {
+  font-size: 1rem;
+  color: #ccc;
+  margin-left: 0.2rem;
+}
+

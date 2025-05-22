@@ -11,12 +11,13 @@
 
 .tableHeader {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 1fr auto;
+  grid-template-columns: 40px 2fr 1fr 2fr 1fr auto;
   padding: 0.75rem 1rem;
   background: #1c1e22;
   border-radius: 8px;
   font-weight: bold;
   color: #ccc;
+  align-items: center;
 }
 
 .applicationList {
@@ -30,7 +31,7 @@
 
 .applicationCard {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 1fr auto;
+  grid-template-columns: 40px 2fr 1fr 2fr 1fr auto;
   align-items: center;
   background-color: #2b2d31;
   padding: 1rem;
@@ -99,56 +100,88 @@
   justify-content: flex-end;
 }
 
-.tableHeader span,
-.applicationCard span {
+/* Column layout adjustments */
+.applicationCard span,
+.tableHeader span {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 }
 
-.tableHeader span:nth-child(3),
-.applicationCard span:nth-child(3) {
+.tableHeader span.submittedColumn,
+.applicationCard span.submittedColumn {
   justify-content: flex-end;
   text-align: right;
+  padding-right: 240px; /* Adjust this for perfect spacing */
+}
+
+.tableHeader span:nth-child(4),
+.applicationCard span:nth-child(4) {
+  justify-content: flex-start;
+  padding-left: 30px;
 }
 
 .scoreColumn {
-  justify-content: center; /* or use 'flex-end' if you want right alignment */
-}
-
-.applicationCard span {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  text-align: center;
 }
 
 .applicationCard span.scoreColumn {
-  justify-content: center; /* or flex-end */
+  justify-content: center;
 }
 
 .submittedColumn {
-  justify-content: flex-end; /* Pushes it to the right within the cell */
-}
-
-.applicationCard span {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .applicationCard span.submittedColumn {
   justify-content: flex-end;
 }
 
-/* Adjust Submitted column (3rd) */
-.tableHeader span:nth-child(3),
-.applicationCard span:nth-child(3) {
-  justify-content: flex-start;
-  padding-left: 130px;
+/* ✅ Checkbox styling */
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
-/* Adjust Status column (4th) */
-.tableHeader span:nth-child(4),
-.applicationCard span:nth-child(4) {
+.checkbox input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #5865f2;
+  border-radius: 4px;
+  background-color: #1e1f22;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.checkbox input[type='checkbox']::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 25%, 80% 0%, 43% 62%);
+  background-color: white;
+  transform: scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+.checkbox input[type='checkbox']:checked {
+  background-color: #5865f2;
+}
+
+.checkbox input[type='checkbox']:checked::before {
+  transform: scale(1);
+}
+
+.bulkActions {
+  display: flex;
   justify-content: flex-start;
-  padding-left: 10px;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }

@@ -1,0 +1,285 @@
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/app/(with-nav)/applications/ApplicationsLayout.module.css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************/
+/* src/app/(with-nav)/dashboard/[guild_id]/DashboardLayout.module.css */
+
+.ApplicationsLayout_wrapper__Yb6U9 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #1e1f22;
+}
+
+.ApplicationsLayout_body__sbMhP {
+  display: flex;
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.ApplicationsLayout_main___suKH {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* src/app/(with-nav)/dashboard/[guild_id]/DashboardLayout.module.css */
+
+.ApplicationsLayout_wrapper__Yb6U9 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.ApplicationsLayout_body__sbMhP {
+  display: flex;
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.ApplicationsLayout_content__FA1dn {
+  flex: 1 1;
+  padding: 2rem;
+  overflow-y: auto;
+  padding-top: 80px; /* 👈 adjust for topbar height */
+  background-color: #1e1f22;
+}
+
+/* Topbar.module.css */
+/* Topbar.module.css */
+.ApplicationsLayout_topbar__b1fR0 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #2b2d31;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+}
+
+.ApplicationsLayout_container__V_W6O {
+  margin-left: 240px;   /* sidebar */
+  margin-top: 60px;     /* topbar */
+  padding: 2rem;
+  max-width: 1000px;
+  margin-right: auto;
+  margin-left: auto;
+}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/components/DashboardSidebar.module.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************/
+.DashboardSidebar_sidebar__IHntr {
+  position: fixed;
+  top: 60px; /* offset by the topbar height */
+  left: 0;
+  height: calc(100% - 60px); /* subtract topbar height */
+  width: 240px;
+  background-color: #1e1f22;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 90; /* less than Topbar */
+  border-right: 1px solid #2a2a2a;
+}
+
+
+.DashboardSidebar_link__X6mrT {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #c9d1d9;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.DashboardSidebar_link__X6mrT:hover {
+  background-color: #2f3136;
+  color: white;
+}
+
+.DashboardSidebar_active__PW97o {
+  color: #fff;
+  font-weight: 700;
+}
+
+.DashboardSidebar_containerWithSidebar__Hsv_u {
+  margin-left: 220px; /* matches sidebar width */
+  padding: 2rem;
+  max-width: 1000px; /* or whatever fits nicely */
+  width: 100%;
+}
+
+.DashboardSidebar_active__PW97o {
+  background-color: #5865f2; /* Discord-like accent */
+  color: white;
+  font-weight: 600;
+}
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/components/Topbar.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+.Topbar_topbar__V0QGl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* full width */
+  height: 60px;
+  background-color: #2b2d31;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100; /* higher than sidebar */
+}
+
+.Topbar_right__Jj2ao {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 4rem; /* ✅ Push content in slightly */
+}
+
+.Topbar_logoArea__forZL {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.Topbar_logoImage__LJuRd {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 5px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  object-fit: cover;
+}
+
+.Topbar_brand__3hSuU {
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.Topbar_avatarWrapper__5Bf2P {
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid #5865f2;
+  overflow: hidden;
+  width: 40px;
+  height: 40px;
+}
+
+.Topbar_avatar__Eq_S3 {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.Topbar_dropdown__HJUG8 {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #1e1f22;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 0.75rem;
+  width: 200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 200;
+  animation: Topbar_fadeIn__o0Bh1 0.2s ease-in-out;
+}
+
+.Topbar_name__eFLUk {
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.3rem;
+}
+
+.Topbar_logout__u1BV7 {
+  background-color: transparent;
+  color: #ff5555;
+  border: none;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 4px;
+}
+
+@keyframes Topbar_fadeIn__o0Bh1 {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.Topbar_devButton__28Bss {
+  background-color: #5865f2;
+  color: white;
+  font-weight: 600;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.Topbar_devButton__28Bss:hover {
+  background-color: #4752c4;
+}
+
+.Topbar_logout__u1BV7 {
+  background-color: transparent;
+  color: #ff5b5b;
+  border: 1px solid #ff5b5b;
+  padding: 10px 15px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.Topbar_logout__u1BV7:hover {
+  background-color: rgba(255, 91, 91, 0.1);
+}
+
+.Topbar_centerText__7McvY {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.Topbar_guildName__av6yP {
+  opacity: 0.9;
+}
+

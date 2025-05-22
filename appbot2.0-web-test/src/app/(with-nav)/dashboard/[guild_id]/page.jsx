@@ -13,6 +13,11 @@ export default function DashboardPage() {
   const [newTitle, setNewTitle] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(null)
 
+  const [channels, setChannels] = useState([])
+  const [selectedChannelId, setSelectedChannelId] = useState('')
+
+  const [successMessage, setSuccessMessage] = useState('')
+
   useEffect(() => {
     const fetchForms = async () => {
       try {
@@ -25,27 +30,40 @@ export default function DashboardPage() {
     }
 
     if (guild_id) fetchForms()
+
+      const fetchChannels = async () => {
+      try {
+        const res = await fetch(`/api/forms/${guild_id}/channels`)
+        const data = await res.json()
+        setChannels(data)
+      } catch (err) {
+        console.error('❌ Error loading channels:', err)
+      }
+    }
+    fetchChannels()
+
   }, [guild_id])
 
-  const handleCreateForm = async () => {
-    if (!newTitle.trim()) return
-    try {
-      const res = await fetch(`/api/forms/${guild_id}/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle }),
-      })
+    const handleCreateForm = async () => {
+      if (!newTitle.trim() || !selectedChannelId) return
+      try {
+        const res = await fetch(`/api/forms/${guild_id}/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: newTitle, log_channel_id: selectedChannelId }),
+        })
 
-      if (res.ok) {
-        const newForm = await res.json()
-        setForms(prev => [...prev, newForm])
-        setNewTitle('')
-        setCreating(false)
+        if (res.ok) {
+          const newForm = await res.json()
+          setForms(prev => [...prev, newForm])
+          setNewTitle('')
+          setSelectedChannelId('')
+          setCreating(false)
+        }
+      } catch (err) {
+        console.error('Error creating form:', err)
       }
-    } catch (err) {
-      console.error('Error creating form:', err)
     }
-  }
 
   const handleDelete = async () => {
     if (!confirmDelete) return
@@ -88,21 +106,73 @@ export default function DashboardPage() {
 
         {creating && (
           <div className={styles.createModal}>
-            <input
-              type="text"
-              value={newTitle}
-              placeholder="Enter form name"
-              onChange={(e) => setNewTitle(e.target.value)}
-              className={styles.input}
-            />
+        <input
+          type="text"
+          value={newTitle}
+          placeholder="Enter form name"
+          onChange={(e) => setNewTitle(e.target.value)}
+          className={styles.input}
+        />
+        <select
+          value={selectedChannelId}
+          onChange={(e) => setSelectedChannelId(e.target.value)}
+          className={styles.select}
+        >
+          <option value="">Select Log Channel</option>
+          {channels.map((channel) => (
+            <option key={channel.id} value={channel.id}>
+              #{channel.name}
+            </option>
+          ))}
+        </select>
+
             <button className={styles.confirmButton} onClick={handleCreateForm}>✅</button>
             <button className={styles.cancelButton} onClick={() => setCreating(false)}>❌</button>
           </div>
         )}
 
+        {successMessage && (
+        <p className={styles.successMessage}>{successMessage}</p>
+        )}
+
         {forms.map((form) => (
           <div className={styles.formCard} key={form.id}>
             <span className={styles.formTitle}>{form.title}</span>
+            <select
+              className={styles.selectInline}
+              value={form.log_channel_id || ''}
+              onChange={async (e) => {
+                const newChannelId = e.target.value
+                const res = await fetch(`/api/forms/${guild_id}/update-channel`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    formId: form.id,
+                    log_channel_id: newChannelId,
+                  }),
+                })
+
+                if (res.ok) {
+                  setForms(prev =>
+                    prev.map(f =>
+                      f.id === form.id ? { ...f, log_channel_id: newChannelId } : f
+                    )
+                  )
+                  setSuccessMessage('✅ Log channel updated.')
+                  setTimeout(() => setSuccessMessage(''), 2500)
+                } else {
+                  console.error('❌ Failed to update log channel')
+                }
+              }}
+            >
+
+  {channels.map((channel) => (
+    <option key={channel.id} value={channel.id}>
+      #{channel.name}
+    </option>
+  ))}
+</select>
+
             <div className={styles.formActions}>
               <button
                 className={styles.iconButton}

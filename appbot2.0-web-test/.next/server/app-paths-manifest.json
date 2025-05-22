@@ -1,1 +1,21 @@
-{}
+{
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/is-dev-user/route": "app/api/is-dev-user/route.js",
+  "/api/bot-guilds/route": "app/api/bot-guilds/route.js",
+  "/api/forms/[guild_id]/route": "app/api/forms/[guild_id]/route.js",
+  "/api/forms/[guild_id]/channels/route": "app/api/forms/[guild_id]/channels/route.js",
+  "/api/applications/[guild_id]/route": "app/api/applications/[guild_id]/route.js",
+  "/api/developer/stats/route": "app/api/developer/stats/route.js",
+  "/api/developer/servers/route": "app/api/developer/servers/route.js",
+  "/api/developer/users/route": "app/api/developer/users/route.js",
+  "/api/developer/dev-users/route": "app/api/developer/dev-users/route.js",
+  "/developer/dashboard/page": "app/developer/dashboard/page.js",
+  "/(no-nav)/servers/page": "app/(no-nav)/servers/page.js",
+  "/(with-nav)/home/page": "app/(with-nav)/home/page.js",
+  "/developer/servers/page": "app/developer/servers/page.js",
+  "/developer/users/page": "app/developer/users/page.js",
+  "/developer/dev-users/page": "app/developer/dev-users/page.js",
+  "/(with-nav)/applications/[guild_id]/page": "app/(with-nav)/applications/[guild_id]/page.js",
+  "/(with-nav)/dashboard/[guild_id]/page": "app/(with-nav)/dashboard/[guild_id]/page.js",
+  "/(with-nav)/settings/[guild_id]/page": "app/(with-nav)/settings/[guild_id]/page.js"
+}

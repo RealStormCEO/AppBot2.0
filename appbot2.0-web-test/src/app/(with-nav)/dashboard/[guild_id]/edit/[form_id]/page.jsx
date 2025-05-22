@@ -186,10 +186,12 @@ const handleConfirmDelete = async (id) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>📝 Editing Form</h1>
-        <button className={styles.addButton} onClick={() => setShowCreate(true)}>➕</button>
-      </div>
+<div className={styles.header}>
+  <h1 className={styles.title}>📝 Editing Form</h1>
+  {!showCreate && (
+    <button className={styles.addButton} onClick={() => setShowCreate(true)}>➕</button>
+  )}
+</div>
 
       {showCreate && (
         <div className={styles.createArea}>

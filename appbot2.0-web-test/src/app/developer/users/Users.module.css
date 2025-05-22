@@ -1,0 +1,201 @@
+.container {
+  padding: 2rem 2rem 2rem 260px;
+  color: white;
+}
+
+.header {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.addButton {
+  background-color: #5865f2;
+  color: white;
+  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: #4752c4;
+}
+
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  background-color: #1e1f22;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.formRow input,
+.formRow select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #2e2f33;
+  background-color: #2b2d31;
+  color: white;
+  font-size: 0.95rem;
+  min-width: 180px;
+}
+
+.formRow select {
+  cursor: pointer;
+}
+
+.saveButton {
+  background-color: #4bc0c0;
+  color: black;
+}
+
+.cancelButton {
+  background-color: #d9534f;
+  color: white;
+}
+
+.userTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.userRow {
+  background: #2b2d31;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s ease;
+}
+
+.cell {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  color: white;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.formActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.saveButton,
+.cancelButton {
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalBackdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background-color: #2b2d31;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.modalButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.userRow input,
+.userRow select {
+  background-color: #1e1f22;
+  border: 1px solid #444;
+  color: white;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  min-width: 180px;
+}
+
+.userRow input:focus,
+.userRow select:focus {
+  outline: none;
+  border-color: #5865f2;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.addButton {
+  background-color: #5865f2;
+  color: white;
+  font-size: 0.95rem;
+  padding: 0.45rem 1rem;
+  min-width: 110px;         /* ✅ Ensures wide enough space */
+  white-space: nowrap;      /* ✅ Keeps text on one line */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0.8rem;
+  gap: 0.4rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: #4752c4;
+}

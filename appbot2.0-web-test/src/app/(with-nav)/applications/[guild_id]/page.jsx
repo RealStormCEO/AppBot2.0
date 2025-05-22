@@ -9,8 +9,10 @@ export default function ApplicationsPage() {
   const [applications, setApplications] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const [viewingApp, setViewingApp] = useState(null)
+  const [selectedIds, setSelectedIds] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false)
 
   const router = useRouter();
 
@@ -58,6 +60,42 @@ export default function ApplicationsPage() {
     }
   }
 
+  const handleBulkDelete = async () => {
+    try {
+      const res = await fetch(`/api/applications/${guild_id}/bulk-delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedIds }),
+      })
+
+      if (res.ok) {
+        setApplications(prev => prev.filter(app => !selectedIds.includes(app.id)))
+        setSelectedIds([])
+        setSelectAll(false)
+        setConfirmBulkDelete(false)
+      } else {
+        console.error('❌ Failed to delete selected applications')
+      }
+    } catch (err) {
+      console.error('❌ Bulk delete error:', err)
+    }
+  }
+
+  const toggleSelectAll = () => {
+    if (selectAll) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(applications.map(app => app.id))
+    }
+    setSelectAll(!selectAll)
+  }
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
+  }
+
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.title}>📄 Applications</h1>
@@ -66,11 +104,21 @@ export default function ApplicationsPage() {
         <p>Loading...</p>
       ) : (
         <>
+              {selectedIds.length > 0 && (
+                <div className={styles.bulkActions}>
+                  <button className={styles.iconButtonDelete} onClick={() => setConfirmBulkDelete(true)}>
+                    🗑️ Delete Selected
+                  </button>
+                </div>
+              )}
           {applications.length === 0 ? (
             <p>No applications submitted.</p>
           ) : (
             <>
               <div className={styles.tableHeader}>
+                <div className={styles.checkbox}>
+                <input type="checkbox" checked={selectAll} onChange={toggleSelectAll} />
+                </div>
                 <span>User</span>
                 <span className={styles.scoreColumn}>AI Detection Score</span>
                 <span className={styles.submittedColumn}>Submitted</span>
@@ -81,6 +129,12 @@ export default function ApplicationsPage() {
               <ul className={styles.applicationList}>
                 {applications.map(app => (
                   <li key={app.id} className={styles.applicationCard}>
+                    <div className={styles.checkbox}>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(app.id)}
+                      onChange={() => toggleSelect(app.id)}
+                    /></div>
                     <span>{app.username}</span>
                     <span className={styles.scoreColumn}>
                       {(Math.round(app.ai_score * 100) / 100).toFixed(2)}
@@ -96,7 +150,12 @@ export default function ApplicationsPage() {
                       >
                         🔍
                       </button>
-                      <button className={styles.iconButtonDelete} onClick={() => setConfirmDeleteId(app.id)}>🗑️</button>
+                      <button
+                        className={styles.iconButtonDelete}
+                        onClick={() => setConfirmDeleteId(app.id)}
+                      >
+                        🗑️
+                      </button>
                     </div>
                   </li>
                 ))}
@@ -104,47 +163,25 @@ export default function ApplicationsPage() {
             </>
           )}
 
-          {viewingApp && (
-            <div className={styles.modalBackdrop}>
-              <div className={styles.modal}>
-                <h2>📄 Application Details</h2>
-                <p><strong>👤 Username:</strong> {viewingApp.username}</p>
-                <p><strong>📅 Submitted At:</strong> {viewingApp.submitted_at}</p>
-                <p><strong>🤖 AI Score:</strong> {viewingApp.ai_score}</p>
-                <p><strong>📌 Status:</strong> {
-                  viewingApp.application_status === 1 ? 'Pending' :
-                  viewingApp.application_status === 2 ? 'Accepted' :
-                  'Denied'
-                }</p>
-
-                <div style={{ marginTop: '1rem' }}>
-                  <h3>📝 Responses:</h3>
-                  {Object.entries(JSON.parse(viewingApp.responses)).map(([question, answer]) => (
-                    <p key={question}><strong>{question}</strong><br />{answer}</p>
-                  ))}
-                </div>
-
-                <div className={styles.modalButtons}>
-                  <button className={styles.cancel} onClick={() => setViewingApp(null)}>❌ Close</button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {confirmDeleteId !== null && (
             <div className={styles.modalBackdrop}>
               <div className={styles.modal}>
                 <p>Are you sure you want to delete this application?</p>
                 <div className={styles.modalButtons}>
-                  <button
-                    className={styles.confirm}
-                    onClick={() => handleDelete(confirmDeleteId)}
-                  >
-                    ✅ Confirm
-                  </button>
-                  <button className={styles.cancel} onClick={() => setConfirmDeleteId(null)}>
-                    ❌ Cancel
-                  </button>
+                  <button className={styles.confirm} onClick={() => handleDelete(confirmDeleteId)}>✅ Confirm</button>
+                  <button className={styles.cancel} onClick={() => setConfirmDeleteId(null)}>❌ Cancel</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {confirmBulkDelete && (
+            <div className={styles.modalBackdrop}>
+              <div className={styles.modal}>
+                <p>Are you sure you want to delete all selected applications?</p>
+                <div className={styles.modalButtons}>
+                  <button className={styles.confirm} onClick={handleBulkDelete}>✅ Confirm</button>
+                  <button className={styles.cancel} onClick={() => setConfirmBulkDelete(false)}>❌ Cancel</button>
                 </div>
               </div>
             </div>

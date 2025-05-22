@@ -1,27 +1,45 @@
 .sidebar {
-  width: 250px;
-  background-color: #2b2d31;
+  position: fixed;
+  top: 60px; /* offset by the topbar height */
+  left: 0;
+  height: calc(100% - 60px); /* subtract topbar height */
+  width: 240px; /* matches Dashboard sidebar width */
+  background-color: #1e1f22;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 1.5rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 90;
+  border-right: 1px solid #2a2a2a;
 }
 
 .link {
-  color: white;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #c9d1d9;
   text-decoration: none;
-  padding: 0.6rem 1rem;
+  font-weight: 500;
   border-radius: 6px;
-  transition: background 0.3s;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .link:hover {
-  background-color: #3c3f45;
+  background-color: #2f3136;
+  color: white;
 }
 
 .active {
-  background-color: #5865f2; /* Discord-like accent */
+  background-color: #5865f2;
   color: white;
   font-weight: 600;
+}
+
+.containerWithSidebar {
+  margin-left: 240px;
+  padding: 2rem;
+  max-width: 1000px;
+  width: 100%;
 }

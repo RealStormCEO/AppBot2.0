@@ -63,7 +63,7 @@ export default function HomePage() {
 
       <footer className={styles.footer}>
         {"© "}{new Date().getFullYear()} RealStormCo. All rights reserved. <br />
-        Developed by RealStormCo for the AppBot2.0 Discord ecosystem.
+        Developed by RealStormCo | Idea by TazzoTezz for the AppBot2.0 Discord ecosystem.
         </footer>
     </div>
   )
