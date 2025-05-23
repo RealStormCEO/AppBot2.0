@@ -8,6 +8,7 @@ import styles from './EditForm.module.css'
 
 export default function EditFormPage() {
   const { guild_id, form_id } = useParams()
+
   const [questions, setQuestions] = useState([])
   const [originalOrder, setOriginalOrder] = useState([])
   const [loading, setLoading] = useState(true)
@@ -23,25 +24,44 @@ export default function EditFormPage() {
   const [editedMinWords, setEditedMinWords] = useState('')
 
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [maxQuestionsModalVisible, setMaxQuestionsModalVisible] = useState(false)
+
+  // Fetch current user and plans like dashboard logic
+  const [currentUser, setCurrentUser] = useState(null)
+  const [plans, setPlans] = useState([])
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    async function fetchInitialData() {
       try {
-        const res = await fetch(`/api/forms/${guild_id}/questions/${form_id}`)
-        const data = await res.json()
-        if (Array.isArray(data)) {
-          setQuestions(data)
-          setOriginalOrder(data.map(q => q.id))
+        const userRes = await fetch('/api/developer/current-user')
+        const userData = userRes.ok ? await userRes.json() : null
+        setCurrentUser(userData)
+
+        const plansRes = await fetch('/api/developer/plans')
+        const plansData = plansRes.ok ? await plansRes.json() : []
+        setPlans(plansData)
+
+        if (guild_id && form_id) {
+          const res = await fetch(`/api/forms/${guild_id}/questions/${form_id}`)
+          const data = await res.json()
+          if (Array.isArray(data)) {
+            setQuestions(data)
+            setOriginalOrder(data.map(q => q.id))
+          }
         }
       } catch (err) {
-        console.error('Failed to load questions:', err)
+        console.error('Failed to fetch initial data:', err)
       } finally {
         setLoading(false)
       }
     }
-
-    fetchQuestions()
+    fetchInitialData()
   }, [guild_id, form_id])
+
+  // Calculate maxQuestions from plans & currentUser plan
+  const normalizedUserPlan = (currentUser?.plan || 'Free').trim().toLowerCase()
+  const userPlanObj = plans.find(p => p.name.trim().toLowerCase() === normalizedUserPlan)
+  const maxQuestions = userPlanObj?.max_questions || 5
 
   const hasChanges = JSON.stringify(questions.map(q => q.id)) !== JSON.stringify(originalOrder)
 
@@ -76,6 +96,11 @@ export default function EditFormPage() {
   const handleCreate = async () => {
     if (!newQuestion.trim()) return
 
+    if (questions.length >= maxQuestions) {
+      setMaxQuestionsModalVisible(true)
+      return
+    }
+
     try {
       const res = await fetch(`/api/forms/${guild_id}/questions/${form_id}/create`, {
         method: 'POST',
@@ -104,42 +129,33 @@ export default function EditFormPage() {
   }
 
   const handleDelete = async (id) => {
-  try {
-    const res = await fetch(
-      `/api/forms/${guild_id}/questions/${form_id}/delete?id=${id}`,
-      { method: 'DELETE' }
-    )
-
-    if (res.ok) {
-      setQuestions(prev => prev.filter(q => q.id !== id))
-      setOriginalOrder(prev => prev.filter(i => i !== id))
-    } else {
-      console.error('Failed to delete')
+    try {
+      const res = await fetch(`/api/forms/${guild_id}/questions/${form_id}/delete?id=${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setQuestions(prev => prev.filter(q => q.id !== id))
+        setOriginalOrder(prev => prev.filter(i => i !== id))
+      } else {
+        console.error('Failed to delete')
+      }
+    } catch (err) {
+      console.error('Delete error:', err)
     }
-  } catch (err) {
-    console.error('Delete error:', err)
   }
-}
 
-const handleConfirmDelete = async (id) => {
-  try {
-        const res = await fetch(`/api/forms/${guild_id}/questions/${form_id}/delete?id=${id}`, {
-        method: 'DELETE'
-    })
-
-
-    if (res.ok) {
-      setQuestions(prev => prev.filter(q => q.id !== id))
-      setOriginalOrder(prev => prev.filter(qid => qid !== id))
-      setConfirmDeleteId(null)
-    } else {
-      console.error('❌ Failed to delete question')
+  const handleConfirmDelete = async (id) => {
+    try {
+      const res = await fetch(`/api/forms/${guild_id}/questions/${form_id}/delete?id=${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setQuestions(prev => prev.filter(q => q.id !== id))
+        setOriginalOrder(prev => prev.filter(qid => qid !== id))
+        setConfirmDeleteId(null)
+      } else {
+        console.error('❌ Failed to delete question')
+      }
+    } catch (err) {
+      console.error('❌ Delete error:', err)
     }
-  } catch (err) {
-    console.error('❌ Delete error:', err)
   }
-}
-
 
   const startEditing = (q) => {
     setEditingId(q.id)
@@ -186,12 +202,12 @@ const handleConfirmDelete = async (id) => {
 
   return (
     <div className={styles.wrapper}>
-<div className={styles.header}>
-  <h1 className={styles.title}>📝 Editing Form</h1>
-  {!showCreate && (
-    <button className={styles.addButton} onClick={() => setShowCreate(true)}>➕</button>
-  )}
-</div>
+      <div className={styles.header}>
+        <h1 className={styles.title}>📝 Editing Form</h1>
+        {!showCreate && (
+          <button className={styles.addButton} onClick={() => setShowCreate(true)}>➕</button>
+        )}
+      </div>
 
       {showCreate && (
         <div className={styles.createArea}>
@@ -282,9 +298,9 @@ const handleConfirmDelete = async (id) => {
                                 className={styles.iconButtonDelete}
                                 title="Delete"
                                 onClick={() => setConfirmDeleteId(q.id)}
-                                >
+                              >
                                 🗑️
-                                </button>
+                              </button>
                             </div>
                           </>
                         )}
@@ -297,24 +313,37 @@ const handleConfirmDelete = async (id) => {
             )}
           </StrictModeDroppable>
 
-            {confirmDeleteId !== null && (
-                <div className={styles.modalBackdrop}>
-                <div className={styles.modal}>
+          {confirmDeleteId !== null && (
+            <div className={styles.modalBackdrop}>
+              <div className={styles.modal}>
                 <p>Are you sure you want to delete this question?</p>
                 <div className={styles.modalButtons}>
-                    <button
-                        className={styles.confirm}
-                        onClick={() => handleConfirmDelete(confirmDeleteId)}
-                    >
-                        ✅ Confirm
-                    </button>
-                    <button className={styles.cancel} onClick={() => setConfirmDeleteId(null)}>
-                        ❌ Cancel
-                    </button>
+                  <button
+                    className={styles.confirm}
+                    onClick={() => handleConfirmDelete(confirmDeleteId)}
+                  >
+                    ✅ Confirm
+                  </button>
+                  <button className={styles.cancel} onClick={() => setConfirmDeleteId(null)}>
+                    ❌ Cancel
+                  </button>
                 </div>
-                </div>
+              </div>
             </div>
-            )}
+          )}
+
+          {maxQuestionsModalVisible && (
+            <div className={styles.modalBackdrop}>
+              <div className={styles.modal}>
+                <p>
+                  You have reached the max number of questions ({maxQuestions}) allowed for your plan ({userPlanObj?.name || 'Free'}).
+                </p>
+                <div className={styles.modalButtons}>
+                  <button className={styles.confirm} onClick={() => setMaxQuestionsModalVisible(false)}>OK</button>
+                </div>
+              </div>
+            </div>
+          )}
         </DragDropContext>
       )}
     </div>

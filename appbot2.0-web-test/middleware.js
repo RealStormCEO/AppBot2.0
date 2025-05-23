@@ -1,4 +1,3 @@
-// middleware.js
 import { getToken } from "next-auth/jwt"
 import { NextResponse } from "next/server"
 
@@ -23,7 +22,6 @@ export async function middleware(req) {
   return NextResponse.next()
 }
 
-// ✅ THIS is where the matcher config should live
 export const config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|login|api/auth).*)",

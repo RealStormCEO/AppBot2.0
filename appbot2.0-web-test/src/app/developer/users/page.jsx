@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import styles from './Users.module.css'
 
-const planOptions = ['Free', 'Basic', 'Pro']
 const expirationOptions = [
   { label: '1 Week', value: 7 },
   { label: '1 Month', value: 30 },
@@ -20,11 +19,12 @@ const addTimeOptions = [
 
 export default function UsersPage() {
   const [users, setUsers] = useState([])
+  const [plans, setPlans] = useState([]) // dynamically fetched plans
   const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ user_id: '', username: '', plan: 'Free', expiration_days: 7 })
+  const [form, setForm] = useState({ user_id: '', username: '', plan: '', expiration_days: 7 })
 
   const [editingId, setEditingId] = useState(null)
-  const [editedUser, setEditedUser] = useState({ user_id: '', username: '', plan: 'Free', expiration_days: 7 })
+  const [editedUser, setEditedUser] = useState({ user_id: '', username: '', plan: '', expiration_days: 7 })
   const [confirmDelete, setConfirmDelete] = useState(null)
 
   const [showAddTime, setShowAddTime] = useState(false)
@@ -32,32 +32,60 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers()
+    fetchPlans()
   }, [])
 
   const fetchUsers = async () => {
-    const res = await fetch('/api/developer/users')
-    const data = await res.json()
-    setUsers(data)
+    try {
+      const res = await fetch('/api/developer/users')
+      if (!res.ok) throw new Error('Failed to fetch users')
+      const data = await res.json()
+      setUsers(data)
+    } catch (err) {
+      console.error('Failed to fetch users:', err)
+    }
+  }
+
+  const fetchPlans = async () => {
+    try {
+      const res = await fetch('/api/developer/plans')
+      if (!res.ok) throw new Error('Failed to fetch plans')
+      const data = await res.json()
+      setPlans(data)
+
+      // Set default plan if empty
+      setForm(f => ({ ...f, plan: f.plan || (data.length > 0 ? data[0].name : '') }))
+      setEditedUser(eu => ({ ...eu, plan: eu.plan || (data.length > 0 ? data[0].name : '') }))
+    } catch (err) {
+      console.error('Failed to fetch plans:', err)
+    }
   }
 
   const handleAddUser = async () => {
     const expiration = new Date()
     expiration.setDate(expiration.getDate() + parseInt(form.expiration_days) + 1)
 
-    await fetch('/api/developer/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, expiration_date: expiration })
-    })
-
-    setForm({ user_id: '', username: '', plan: 'Free', expiration_days: 7 })
-    setShowForm(false)
-    fetchUsers()
+    try {
+      await fetch('/api/developer/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, expiration_date: expiration })
+      })
+      setForm({ user_id: '', username: '', plan: plans.length > 0 ? plans[0].name : '', expiration_days: 7 })
+      setShowForm(false)
+      fetchUsers()
+    } catch (err) {
+      console.error('Failed to add user:', err)
+    }
   }
 
   const handleDelete = async (id) => {
-    await fetch(`/api/developer/users/${id}`, { method: 'DELETE' })
-    fetchUsers()
+    try {
+      await fetch(`/api/developer/users/${id}`, { method: 'DELETE' })
+      fetchUsers()
+    } catch (err) {
+      console.error('Failed to delete user:', err)
+    }
   }
 
   const handleAddTime = async () => {
@@ -86,27 +114,34 @@ export default function UsersPage() {
 
   const cancelEditing = () => {
     setEditingId(null)
-    setEditedUser({ user_id: '', username: '', plan: 'Free', expiration_days: 7 })
+    setEditedUser({ user_id: '', username: '', plan: plans.length > 0 ? plans[0].name : '', expiration_days: 7 })
   }
 
   const handleSaveEdit = async (id) => {
     const expiration = new Date()
     expiration.setDate(expiration.getDate() + parseInt(editedUser.expiration_days) + 1)
 
-    await fetch(`/api/developer/users/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...editedUser, expiration_date: expiration }),
-    })
-
-    cancelEditing()
-    fetchUsers()
+    try {
+      await fetch(`/api/developer/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...editedUser, expiration_date: expiration }),
+      })
+      cancelEditing()
+      fetchUsers()
+    } catch (err) {
+      console.error('Failed to save edit:', err)
+    }
   }
 
   const handleConfirmDelete = async (id) => {
-    await fetch(`/api/developer/users/${id}`, { method: 'DELETE' })
-    setConfirmDelete(null)
-    fetchUsers()
+    try {
+      await fetch(`/api/developer/users/${id}`, { method: 'DELETE' })
+      setConfirmDelete(null)
+      fetchUsers()
+    } catch (err) {
+      console.error('Failed to delete user:', err)
+    }
   }
 
   const getDaysUntil = (date) => {
@@ -162,7 +197,11 @@ export default function UsersPage() {
             onChange={(e) => setForm({ ...form, user_id: e.target.value })}
           />
           <select value={form.plan} onChange={(e) => setForm({ ...form, plan: e.target.value })}>
-            {planOptions.map(p => <option key={p}>{p}</option>)}
+            {plans.map(p => (
+              <option key={p.name} value={p.name}>
+                {p.name}
+              </option>
+            ))}
           </select>
           <select value={form.expiration_days} onChange={(e) => setForm({ ...form, expiration_days: e.target.value })}>
             {expirationOptions.map(opt => (
@@ -198,7 +237,11 @@ export default function UsersPage() {
                   onChange={(e) => setEditedUser({ ...editedUser, plan: e.target.value })}
                   className={styles.input}
                 >
-                  {planOptions.map(p => <option key={p}>{p}</option>)}
+                  {plans.map(p => (
+                    <option key={p.name} value={p.name}>
+                      {p.name}
+                    </option>
+                  ))}
                 </select>
                 <select
                   value={editedUser.expiration_days}

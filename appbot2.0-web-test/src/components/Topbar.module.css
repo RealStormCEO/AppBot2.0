@@ -154,3 +154,29 @@
 .guildName {
   opacity: 0.9;
 }
+
+.userInfoDropdown {
+  white-space: pre-line; /* Allow newlines in text */
+  font-size: 0.9rem;
+  line-height: 1.3;
+  color: white;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.userInfoDropdown > div {
+  /* Make labels bold and put a little margin */
+  font-weight: 600;
+}
+
+.userInfoDropdown strong {
+  margin-right: 6px;
+}
+
+.userInfoDropdown span {
+  white-space: nowrap;
+  display: inline-block;
+  margin-left: 4px; /* optional, for spacing */
+}

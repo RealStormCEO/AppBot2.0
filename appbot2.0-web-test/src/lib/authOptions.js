@@ -24,12 +24,9 @@ export const authOptions = {
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken;
-
-      // ✅ Inject Discord user ID into session
       if (token.sub) {
-        session.user.id = token.sub;
+        session.user.id = token.sub;  // Inject Discord user ID into session
       }
-
       return session;
     },
     async redirect({ url, baseUrl }) {

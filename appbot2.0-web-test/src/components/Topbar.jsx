@@ -14,6 +14,11 @@ export default function Topbar() {
   const [isDev, setIsDev] = useState(false)
   const [devChecked, setDevChecked] = useState(false)
   const [guildName, setGuildName] = useState('')
+  const [currentUser, setCurrentUser] = useState(null)
+  const [plans, setPlans] = useState([])
+
+  const [timeRemaining, setTimeRemaining] = useState('')
+
   const dropdownRef = useRef(null)
 
   const onServersPage = pathname === '/servers'
@@ -32,7 +37,6 @@ export default function Topbar() {
 
   const activeGuildId = getActiveGuildId()
 
-  // 🔒 Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -43,7 +47,6 @@ export default function Topbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // 🔑 Check developer access
   useEffect(() => {
     const checkDevAccess = async () => {
       if (!session?.user?.id) {
@@ -63,7 +66,6 @@ export default function Topbar() {
     checkDevAccess()
   }, [session?.user?.id])
 
-  // 🧠 Fetch current guild name
   useEffect(() => {
     const fetchGuildName = async () => {
       if (!activeGuildId) {
@@ -87,10 +89,75 @@ export default function Topbar() {
     fetchGuildName()
   }, [activeGuildId, session?.accessToken, status])
 
+  useEffect(() => {
+    async function fetchUserAndPlans() {
+      if (!session?.user?.id) return
+      try {
+        const userRes = await fetch('/api/developer/current-user')
+        const userData = userRes.ok ? await userRes.json() : null
+        setCurrentUser(userData)
+
+        const plansRes = await fetch('/api/developer/plans')
+        const plansData = plansRes.ok ? await plansRes.json() : []
+        setPlans(plansData)
+      } catch (err) {
+        console.error('Failed to fetch user or plans:', err)
+      }
+    }
+    fetchUserAndPlans()
+  }, [session?.user?.id])
+
+  // Countdown timer effect for expiration_date
+useEffect(() => {
+  if (!currentUser?.expiration_date) {
+    setTimeRemaining('')
+    return
+  }
+
+  function updateTime() {
+    const now = new Date()
+    const exp = new Date(currentUser.expiration_date)
+    let diff = exp - now
+
+    if (diff <= 0) {
+      setTimeRemaining('Expired')
+      return
+    }
+
+    const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365))
+    diff -= years * (1000 * 60 * 60 * 24 * 365)
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    diff -= days * (1000 * 60 * 60 * 24)
+
+    const hours = Math.floor(diff / (1000 * 60 * 60))
+    diff -= hours * (1000 * 60 * 60)
+
+    const minutes = Math.floor(diff / (1000 * 60))
+
+    // inside updateTime function:
+    const parts = []
+    if (years > 0) parts.push(`${years}y`)
+    if (days > 0) parts.push(`${days}d`)
+    if (hours > 0) parts.push(`${hours}h`)
+    parts.push(`${minutes}m`)
+
+    setTimeRemaining(parts.join(', '))  // commas with spaces, no newlines
+
+    }
+
+  updateTime()
+  const interval = setInterval(updateTime, 60 * 1000)
+
+  return () => clearInterval(interval)
+}, [currentUser?.expiration_date])
+
   if (status === 'loading') return null
 
-  // Compose display text for guild name
   const guildDisplay = guildName ? `Editing Server: ${guildName}` : ''
+
+  const normalizedUserPlan = (currentUser?.plan || 'Free').trim().toLowerCase()
+  const userPlanObj = plans.find(p => p.name.trim().toLowerCase() === normalizedUserPlan)
 
   return (
     <div className={styles.topbar}>
@@ -116,6 +183,18 @@ export default function Topbar() {
 
         {session?.user && dropdownOpen && (
           <div className={styles.dropdown} ref={dropdownRef}>
+
+            <div className={styles.userInfoDropdown}>
+              <div><strong>User:</strong> {currentUser?.username || session.user.name}</div>
+              <div><strong>Plan:</strong> {userPlanObj?.name || currentUser?.plan || 'Free'}</div>
+              <div><strong>Max Forms:</strong> {userPlanObj?.max_forms ?? 'N/A'}</div>
+              <div><strong>Max Questions:</strong> {userPlanObj?.max_questions ?? 'N/A'}</div>
+              <div>
+              <strong>Time Remaining:</strong><br />
+              <span>{timeRemaining || 'N/A'}</span>
+              </div>
+            </div>
+
             {!onServersPage && (
               <button className={styles.devButton} onClick={() => router.push('/servers')}>
                 🔁 Switch Servers

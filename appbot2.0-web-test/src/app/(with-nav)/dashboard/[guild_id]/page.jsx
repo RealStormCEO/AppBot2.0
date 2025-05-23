@@ -7,7 +7,7 @@ import RequireAuth from '@/components/RequireAuth'
 
 export default function DashboardPage() {
   const { guild_id } = useParams()
-  const router = useRouter();
+  const router = useRouter()
   const [forms, setForms] = useState([])
   const [creating, setCreating] = useState(false)
   const [newTitle, setNewTitle] = useState('')
@@ -17,54 +17,85 @@ export default function DashboardPage() {
   const [selectedChannelId, setSelectedChannelId] = useState('')
 
   const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
+  const [currentUser, setCurrentUser] = useState(null)
+  const [plans, setPlans] = useState([])
+
+  // Modal state for max forms limit
+  const [maxFormsModalVisible, setMaxFormsModalVisible] = useState(false)
+
+  // Fetch current user, plans, forms and channels on mount
   useEffect(() => {
-    const fetchForms = async () => {
+    async function fetchInitialData() {
       try {
-        const res = await fetch(`/api/forms/${guild_id}`)
-        const data = await res.json()
-        setForms(Array.isArray(data) ? data : [])
-      } catch (error) {
-        console.error('Error loading forms:', error)
-      }
-    }
+        const userRes = await fetch('/api/developer/current-user')
+        const userData = userRes.ok ? await userRes.json() : null
+        setCurrentUser(userData)
 
-    if (guild_id) fetchForms()
+        const plansRes = await fetch('/api/developer/plans')
+        const plansData = plansRes.ok ? await plansRes.json() : []
+        setPlans(plansData)
 
-      const fetchChannels = async () => {
-      try {
-        const res = await fetch(`/api/forms/${guild_id}/channels`)
-        const data = await res.json()
-        setChannels(data)
-      } catch (err) {
-        console.error('❌ Error loading channels:', err)
-      }
-    }
-    fetchChannels()
+        if (guild_id) {
+          // Fetch forms for guild
+          const formsRes = await fetch(`/api/forms/${guild_id}`)
+          const formsData = formsRes.ok ? await formsRes.json() : []
+          setForms(formsData)
 
-  }, [guild_id])
-
-    const handleCreateForm = async () => {
-      if (!newTitle.trim() || !selectedChannelId) return
-      try {
-        const res = await fetch(`/api/forms/${guild_id}/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: newTitle, log_channel_id: selectedChannelId }),
-        })
-
-        if (res.ok) {
-          const newForm = await res.json()
-          setForms(prev => [...prev, newForm])
-          setNewTitle('')
-          setSelectedChannelId('')
-          setCreating(false)
+          // Fetch channels
+          const channelsRes = await fetch(`/api/forms/${guild_id}/channels`)
+          const channelsData = channelsRes.ok ? await channelsRes.json() : []
+          setChannels(channelsData)
         }
       } catch (err) {
-        console.error('Error creating form:', err)
+        console.error('Failed to fetch initial data', err)
       }
     }
+    fetchInitialData()
+  }, [guild_id])
 
+  // Get plan limits for current user
+  const normalizedUserPlan = (currentUser?.plan || 'Free').trim().toLowerCase()
+  const userPlanObj = plans.find(p => p.name.trim().toLowerCase() === normalizedUserPlan)
+
+  const maxForms = userPlanObj?.max_forms || 1
+
+  // On create form, check limits before proceeding
+  const handleCreateForm = async () => {
+    setErrorMessage('')
+
+    if (!newTitle.trim() || !selectedChannelId) return
+
+    if (forms.length >= maxForms) {
+      setMaxFormsModalVisible(true)
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/forms/${guild_id}/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle, log_channel_id: selectedChannelId }),
+      })
+
+      if (res.ok) {
+        const newForm = await res.json()
+        setForms(prev => [...prev, newForm])
+        setNewTitle('')
+        setSelectedChannelId('')
+        setCreating(false)
+      } else {
+        const err = await res.text()
+        setErrorMessage('Failed to create form: ' + err)
+      }
+    } catch (err) {
+      console.error('Error creating form:', err)
+      setErrorMessage('Error creating form')
+    }
+  }
+
+  // Delete form handler
   const handleDelete = async () => {
     if (!confirmDelete) return
 
@@ -90,49 +121,47 @@ export default function DashboardPage() {
   return (
     <RequireAuth>
       <div className={styles.containerWithSidebar}>
-      <div className={styles.formsHeader}>
-        <h1 className={styles.heading}>📋 Application Forms</h1>
+        <div className={styles.formsHeader}>
+          <h1 className={styles.heading}>📋 Application Forms</h1>
 
-        {!creating && (
-          <button
-            className={styles.createButton}
-            onClick={() => setCreating(true)}
-            title="Create New Form"
-          >
-            ➕
-          </button>
-        )}
-      </div>
+          {!creating && (
+            <button
+              className={styles.createButton}
+              onClick={() => setCreating(true)}
+              title="Create New Form"
+            >
+              ➕
+            </button>
+          )}
+        </div>
+
+        {errorMessage && <p style={{ color: 'red', textAlign: 'center' }}>{errorMessage}</p>}
 
         {creating && (
           <div className={styles.createModal}>
-        <input
-          type="text"
-          value={newTitle}
-          placeholder="Enter form name"
-          onChange={(e) => setNewTitle(e.target.value)}
-          className={styles.input}
-        />
-        <select
-          value={selectedChannelId}
-          onChange={(e) => setSelectedChannelId(e.target.value)}
-          className={styles.select}
-        >
-          <option value="">Select Log Channel</option>
-          {channels.map((channel) => (
-            <option key={channel.id} value={channel.id}>
-              #{channel.name}
-            </option>
-          ))}
-        </select>
+            <input
+              type="text"
+              value={newTitle}
+              placeholder="Enter form name"
+              onChange={(e) => setNewTitle(e.target.value)}
+              className={styles.input}
+            />
+            <select
+              value={selectedChannelId}
+              onChange={(e) => setSelectedChannelId(e.target.value)}
+              className={styles.select}
+            >
+              <option value="">Select Log Channel</option>
+              {channels.map((channel) => (
+                <option key={channel.id} value={channel.id}>
+                  #{channel.name}
+                </option>
+              ))}
+            </select>
 
             <button className={styles.confirmButton} onClick={handleCreateForm}>✅</button>
             <button className={styles.cancelButton} onClick={() => setCreating(false)}>❌</button>
           </div>
-        )}
-
-        {successMessage && (
-        <p className={styles.successMessage}>{successMessage}</p>
         )}
 
         {forms.map((form) => (
@@ -165,13 +194,12 @@ export default function DashboardPage() {
                 }
               }}
             >
-
-  {channels.map((channel) => (
-    <option key={channel.id} value={channel.id}>
-      #{channel.name}
-    </option>
-  ))}
-</select>
+              {channels.map((channel) => (
+                <option key={channel.id} value={channel.id}>
+                  #{channel.name}
+                </option>
+              ))}
+            </select>
 
             <div className={styles.formActions}>
               <button
@@ -201,6 +229,19 @@ export default function DashboardPage() {
               <div className={styles.modalActions}>
                 <button onClick={() => setConfirmDelete(null)}>Cancel</button>
                 <button onClick={handleDelete} className={styles.danger}>Yes, Delete</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {maxFormsModalVisible && (
+          <div className={styles.modalBackdrop}>
+            <div className={styles.modal}>
+              <p>
+                You have reached the max number of forms ({maxForms}) allowed for your plan ({currentUser?.plan || 'Free'}).
+              </p>
+              <div className={styles.modalButtons}>
+                <button className={styles.confirm} onClick={() => setMaxFormsModalVisible(false)}>OK</button>
               </div>
             </div>
           </div>
