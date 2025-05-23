@@ -1,119 +1,113 @@
 const {
-    SlashCommandBuilder,
-    PermissionFlagsBits,
-  } = require('discord.js');
-  const db = require('../../database/db');
-  
-  module.exports = {
-    data: new SlashCommandBuilder()
-      .setName('application')
-      .setDescription('Manage application questions')
-      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-      .addSubcommand(sub =>
-        sub
-          .setName('add-question')
-          .setDescription('Add a new application question')
-          .addStringOption(option =>
-            option.setName('question').setDescription('The question').setRequired(true)
-          ))
-      .addSubcommand(sub =>
-        sub
-          .setName('remove-question')
-          .setDescription('Remove a question by its number')
-          .addIntegerOption(option =>
-            option.setName('index').setDescription('The index number').setRequired(true)
-          ))
-      .addSubcommand(sub =>
-        sub
-          .setName('list-questions')
-          .setDescription('List all configured application questions'))
-        .addSubcommand(sub =>
-          sub
-          .setName('set-log')
-          .setDescription('Set the channel where applications will be sent')
-          .addChannelOption(option =>
-            option
-                .setName('channel')
-                .setDescription('The channel to send application logs to')
-                .setRequired(true))),
-          
-  
-    async execute(interaction) {
-      const sub = interaction.options.getSubcommand();
-      const guildId = interaction.guild.id;
-  
-      switch (sub) {
-        case 'add-question': {
-          const question = interaction.options.getString('question');
-  
-          // Get max position for ordering
-          const [rows] = await db.execute(
-            'SELECT MAX(position) as max FROM application_questions WHERE guild_id = ?',
-            [guildId]
-          );
-          const position = (rows[0]?.max || 0) + 1;
-  
-          await db.execute(
-            'INSERT INTO application_questions (guild_id, question, position) VALUES (?, ?, ?)',
-            [guildId, question, position]
-          );
-  
-          return interaction.reply(`✅ Question added: "${question}"`);
-        }
-  
-        case 'remove-question': {
-          const index = interaction.options.getInteger('index');
-  
-          const [questions] = await db.execute(
-            'SELECT id, question FROM application_questions WHERE guild_id = ? ORDER BY position ASC',
-            [guildId]
-          );
-  
-          if (index < 1 || index > questions.length) {
-            return interaction.reply('❌ Invalid index number.');
-          }
-  
-          const toRemove = questions[index - 1];
-          await db.execute('DELETE FROM application_questions WHERE id = ?', [toRemove.id]);
-  
-          return interaction.reply(`🗑️ Removed question: "${toRemove.question}"`);
-        }
-  
-        case 'list-questions': {
-          const [questions] = await db.execute(
-            'SELECT question FROM application_questions WHERE guild_id = ? ORDER BY position ASC',
-            [guildId]
-          );
-  
-          if (questions.length === 0) {
-            return interaction.reply('📭 No questions have been added yet.');
-          }
-  
-          const formatted = questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n');
-          return interaction.reply({
-            content: `📝 **Current Questions:**\n${formatted}`,
-            ephemeral: true,
-          });
-        }
+  SlashCommandBuilder,
+  ChannelType,
+  PermissionFlagsBits,
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  EmbedBuilder
+} = require('discord.js');
+const db = require('../../database/db');
 
-        case 'set-log': {
-            const channel = interaction.options.getChannel('channel');
-    
-            if (!channel.isTextBased()) {
-              return interaction.reply({ content: '❌ Channel must be a text channel.', ephemeral: true });
-            }
-    
-            await db.execute(
-              'UPDATE guilds SET log_channel_id = ? WHERE id = ?',
-              [channel.id, guildId]
-            );
-    
-            return interaction.reply(`✅ Application log channel set to <#${channel.id}>`);
-          }
-  
-        default:
-          return interaction.reply('❌ Unknown subcommand.');
-      }
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('set-log')
+    .setDescription('Assign a log channel to an application form')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+  async execute(interaction) {
+    const guildId = interaction.guild.id;
+
+    // Fetch all forms for the guild
+    const [forms] = await db.execute(
+      'SELECT id, title FROM application_forms WHERE guild_id = ? ORDER BY created_at DESC',
+      [guildId]
+    );
+
+    if (forms.length === 0) {
+      return interaction.reply({
+        content: '❌ No application forms exist for this server.',
+        ephemeral: true
+      });
     }
-  };
-  
+
+    // Fetch viewable text channels
+    const textChannels = interaction.guild.channels.cache
+      .filter(c => c.type === ChannelType.GuildText && c.viewable && c.permissionsFor(interaction.user).has('ViewChannel'))
+      .map(c => ({ label: c.name, value: c.id }))
+      .slice(0, 25);
+
+    const formOptions = forms.map(f => ({
+      label: f.title.slice(0, 100),
+      value: f.id.toString()
+    }));
+
+    const formRow = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('select_form_log')
+        .setPlaceholder('📄 Select application form')
+        .addOptions(formOptions)
+    );
+
+    const channelRow = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('select_channel_log')
+        .setPlaceholder('📺 Select log channel')
+        .addOptions(textChannels)
+    );
+
+    await interaction.reply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('🔧 Set Log Channel')
+          .setDescription('Please select the application form and the channel where logs should be sent.')
+          .setColor(0x00bcd4)
+      ],
+      components: [formRow, channelRow],
+      ephemeral: true
+    });
+
+    const collector = interaction.channel.createMessageComponentCollector({
+      filter: i => i.user.id === interaction.user.id,
+      max: 2,
+      time: 60000
+    });
+
+    let selectedFormId = null;
+    let selectedChannelId = null;
+
+    collector.on('collect', async i => {
+      if (i.customId === 'select_form_log') {
+        selectedFormId = i.values[0];
+        await i.deferUpdate();
+      }
+
+      if (i.customId === 'select_channel_log') {
+        selectedChannelId = i.values[0];
+        await i.deferUpdate();
+      }
+
+      if (selectedFormId && selectedChannelId) {
+        await db.execute(
+          'UPDATE application_forms SET log_channel_id = ? WHERE id = ? AND guild_id = ?',
+          [selectedChannelId, selectedFormId, guildId]
+        );
+
+        await interaction.followUp({
+          content: `✅ Log channel <#${selectedChannelId}> has been linked to form **${forms.find(f => f.id == selectedFormId).title}**.`,
+          ephemeral: true
+        });
+
+        collector.stop();
+      }
+    });
+
+    collector.on('end', collected => {
+      if (!selectedFormId || !selectedChannelId) {
+        interaction.followUp({
+          content: '⏱️ Setup canceled or timed out.',
+          ephemeral: true
+        }).catch(() => {});
+      }
+    });
+  }
+};

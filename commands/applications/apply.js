@@ -1,9 +1,10 @@
 const {
   SlashCommandBuilder,
+  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder
+  StringSelectMenuBuilder
 } = require('discord.js');
 const db = require('../../database/db');
 
@@ -16,37 +17,78 @@ module.exports = {
     const guildId = interaction.guild.id;
     const user = interaction.user;
 
-// 🔐 Prevent multiple active applications early
-global.appSessions ??= new Map();
-if (global.appSessions.has(user.id)) {
-  return interaction.reply({
-    content: '❌ You already have an active application in progress. Please complete or cancel it before starting another.',
-    ephemeral: true
-  });
-}
+    global.appSessions ??= new Map();
 
-// Lock the session immediately
-global.appSessions.set(user.id, {
-  guildId,
-  answers: {},
-  startedAt: Date.now()
-});
-
-await interaction.deferReply({ ephemeral: true });   
-
-    const [questions] = await db.execute(
-      'SELECT id, question FROM application_questions WHERE guild_id = ? ORDER BY position ASC LIMIT 20',
-      [guildId]
-    );
-
-    if (questions.length === 0) {
-      return interaction.editReply({
-        content: '❌ No application questions configured.'
+    if (global.appSessions.has(user.id)) {
+      return interaction.reply({
+        content: '❌ You already have an active application in progress. Please complete or cancel it before starting another.',
+        ephemeral: true
       });
     }
 
+    await interaction.reply({ content: '📬 Check your DMs to begin the application.', ephemeral: true });
+
     try {
+      const [forms] = await db.execute(
+        'SELECT id, title FROM application_forms WHERE guild_id = ? AND active = 1 ORDER BY created_at DESC',
+        [guildId]
+      );
+
+      if (forms.length === 0) {
+        await user.send('❌ No application forms available in this server.');
+        return;
+      }
+
       const dmChannel = await user.createDM();
+
+      let selectedFormId;
+      if (forms.length === 1) {
+        selectedFormId = forms[0].id;
+      } else {
+        const formSelectRow = new ActionRowBuilder().addComponents(
+          new StringSelectMenuBuilder()
+            .setCustomId('form_select')
+            .setPlaceholder('📂 Select an application form')
+            .addOptions(forms.map(f => ({
+              label: f.title.slice(0, 100),
+              value: f.id.toString()
+            })))
+        );
+
+        await dmChannel.send({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('📂 Choose an Application Form')
+              .setDescription('Please choose which application you would like to complete.')
+              .setColor(0x7289da)
+          ],
+          components: [formSelectRow]
+        });
+
+        const collected = await dmChannel.awaitMessageComponent({
+          filter: i => i.user.id === user.id && i.customId === 'form_select',
+          time: 60000
+        }).catch(() => null);
+
+        if (!collected) {
+          await dmChannel.send('❌ Timed out waiting for selection.');
+          return;
+        }
+
+        selectedFormId = collected.values[0];
+        await collected.deferUpdate();
+      }
+
+      const [questions] = await db.execute(
+        'SELECT id, question, word_count_min FROM application_questions WHERE form_id = ? ORDER BY position ASC LIMIT 20',
+        [selectedFormId]
+      );
+
+      if (questions.length === 0) {
+        await dmChannel.send('❌ No questions found for this form.');
+        return;
+      }
+
       await dmChannel.send({
         embeds: [
           new EmbedBuilder()
@@ -58,39 +100,58 @@ await interaction.deferReply({ ephemeral: true });
 
       const answers = {};
 
+      // Ask questions with cancel buttons
       for (const [index, q] of questions.entries()) {
-        const embed = new EmbedBuilder()
-          .setTitle(`❓ Question ${index + 1}`)
-          .setDescription(q.question)
-          .setColor(0x5865F2);
+        let valid = false;
+        let userAnswer = '';
 
-        await dmChannel.send({ embeds: [embed] });
+        while (!valid) {
+          const embed = new EmbedBuilder()
+            .setTitle(`❓ Question ${index + 1}`)
+            .setDescription(q.question)
+            .setColor(0x5865F2);
 
-        const collected = await dmChannel.awaitMessages({
-          filter: m => m.author.id === user.id,
-          max: 1,
-          time: 120000
-        }).catch(() => null);
+          // Cancel button on every question
+          const cancelRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+              .setCustomId('app_cancel')
+              .setLabel('❌ Cancel Application')
+              .setStyle(ButtonStyle.Danger)
+          );
 
-        if (!collected || !collected.size) {
-          await dmChannel.send('❌ Application timed out.');
-          global.appSessions.delete(user.id);
-          return;
-        }        
+          await dmChannel.send({ embeds: [embed], components: [cancelRow] });
 
-        answers[q.question] = collected.first().content;
+          const collected = await dmChannel.awaitMessages({
+            filter: m => m.author.id === user.id,
+            max: 1,
+            time: 120000
+          }).catch(() => null);
+
+          if (!collected || !collected.size) {
+            await dmChannel.send('❌ Application timed out.');
+            return;
+          }
+
+          userAnswer = collected.first().content.trim();
+          const wordCount = userAnswer.split(/\s+/).length;
+          const wordMin = q.word_count_min ?? 0;
+
+          if (wordMin > 0 && wordCount < wordMin) {
+            await dmChannel.send(`⚠️ Your response must be at least **${wordMin} words**. You wrote **${wordCount} words**. Please try again.`);
+          } else {
+            valid = true;
+          }
+        }
+
+        answers[q.question] = userAnswer;
       }
 
-      const fields = Object.entries(answers).map(([q, a], i) => {
-        const wordCount = a.trim().split(/\s+/).length;
-        const charCount = a.length;
-
-        return {
-          name: `❓ ${i + 1}. ${q.slice(0, 256)}`,
-          value: `${a.slice(0, 950)}\n\n✍️ Words: **${wordCount}** | 🔡 Characters: **${charCount}**`,
-          inline: false
-        };
-      });
+      // Confirm submission embeds & buttons...
+      const fields = Object.entries(answers).map(([q, a], i) => ({
+        name: `❓ ${i + 1}. ${q.slice(0, 256)}`,
+        value: `${a.slice(0, 950)}`,
+        inline: false
+      }));
 
       const embeds = [];
       while (fields.length > 0) {
@@ -121,28 +182,26 @@ await interaction.deferReply({ ephemeral: true });
 
       global.appSessions.set(user.id, {
         guildId,
+        formId: selectedFormId,
         answers,
         startedAt: Date.now()
       });
 
-      // 🕒 Optional: auto-timeout after 10 minutes
+      // Auto timeout after 10 minutes
       setTimeout(() => {
         if (global.appSessions.has(user.id)) {
           global.appSessions.delete(user.id);
           console.log(`⏱️ Application session timed out for ${user.username}`);
         }
-      }, 10 * 60 * 1000); // 10 minutes
-
-      await interaction.editReply({
-        content: '📬 Check your DMs to begin the application.'
-      });
+      }, 10 * 60 * 1000);
 
     } catch (err) {
-      console.error('❌ Failed to send DM:', err);
-      global.appSessions.delete(user.id);
-      return interaction.editReply({
-        content: '❌ Unable to DM you. Please enable DMs and try again.'
-      });
+      console.error('❌ Error in /apply command:', err);
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.reply({ content: '❌ There was an error starting your application.', ephemeral: true });
+      } else if (interaction.deferred) {
+        await interaction.editReply({ content: '❌ There was an error starting your application.' });
+      }
     }
   }
 };
