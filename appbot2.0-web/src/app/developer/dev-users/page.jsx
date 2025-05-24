@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import styles from './DevUsers.module.css'
+export const dynamic = 'force-dynamic';
 
 export default function DeveloperUsersPage() {
   const [users, setUsers] = useState([])

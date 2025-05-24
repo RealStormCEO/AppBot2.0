@@ -6,6 +6,7 @@ import DashboardSidebar from '@/components/DevSidebar'
 import Topbar from '@/components/Topbar'
 import ConfirmModal from '@/components/ConfirmModal'
 import styles from './DeveloperFeedback.module.css'
+export const dynamic = 'force-dynamic';
 
 export default function DeveloperFeedbackPage() {
   const router = useRouter()

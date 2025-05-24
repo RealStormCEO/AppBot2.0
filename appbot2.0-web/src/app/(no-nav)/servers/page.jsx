@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import styles from './Servers.module.css'
+export const dynamic = 'force-dynamic';
 
 const BOT_ID = process.env.NEXT_PUBLIC_BOT_CLIENT_ID
 

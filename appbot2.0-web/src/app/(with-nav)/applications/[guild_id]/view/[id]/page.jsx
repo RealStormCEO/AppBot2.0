@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import styles from './ViewApplication.module.css'
 import Head from 'next/head'
+export const dynamic = 'force-dynamic';
 
 export default function ViewApplicationPage() {
   const { guild_id, id } = useParams()

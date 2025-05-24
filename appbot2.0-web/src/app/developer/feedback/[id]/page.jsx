@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import DashboardSidebar from '@/components/DevSidebar'
 import Topbar from '@/components/Topbar'
 import styles from './FeedbackView.module.css'
+export const dynamic = 'force-dynamic';
 
 export default function DeveloperFeedbackDetail() {
   const { id } = useParams()

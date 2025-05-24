@@ -6,6 +6,7 @@ import Head from 'next/head'
 import DashboardSidebar from '@/components/DashboardSidebar'
 import Topbar from '@/components/Topbar'
 import styles from './Feedback.module.css'
+export const dynamic = 'force-dynamic';
 
 export default function FeedbackPage() {
   const router = useRouter()

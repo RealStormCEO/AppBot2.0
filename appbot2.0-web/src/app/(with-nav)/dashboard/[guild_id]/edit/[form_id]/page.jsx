@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable } from 'react-beautiful-dnd'
 import StrictModeDroppable from '@/components/StrictModeDroppable'
 import styles from './EditForm.module.css'
+export const dynamic = 'force-dynamic';
 
 export default function EditFormPage() {
   const { guild_id, form_id } = useParams()

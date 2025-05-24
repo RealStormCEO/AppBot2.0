@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import styles from './DeveloperDashboard.module.css'
+export const dynamic = 'force-dynamic';
 
 console.log('✅ page.jsx loaded')
 

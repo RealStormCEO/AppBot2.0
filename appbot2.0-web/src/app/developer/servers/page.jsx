@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import styles from './Servers.module.css'
+export const dynamic = 'force-dynamic';
 
 export default function ServersPage() {
   const [servers, setServers] = useState([])
@@ -49,7 +50,6 @@ useEffect(() => {
     </div>
   ))}
 </div>
-
       )}
     </div>
   )

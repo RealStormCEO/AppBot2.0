@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import styles from './Users.module.css'
+export const dynamic = 'force-dynamic';
 
 const expirationOptions = [
   { label: '1 Week', value: 7 },

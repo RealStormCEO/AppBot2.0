@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import styles from './Dashboard.module.css'
 import RequireAuth from '@/components/RequireAuth'
+export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   const { guild_id } = useParams()

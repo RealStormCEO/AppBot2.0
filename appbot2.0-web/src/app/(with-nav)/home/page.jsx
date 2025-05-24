@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { FaDiscord } from 'react-icons/fa'
+export const dynamic = 'force-dynamic';
 
 const SUPPORT_SERVER = process.env.NEXT_PUBLIC_SUPPORT_SERVER || '#'
 

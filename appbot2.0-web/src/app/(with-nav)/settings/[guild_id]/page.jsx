@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import styles from './Settings.module.css'
 import EmbedBuilder from '@/components/EmbedBuilder' // adjust path as needed
+export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
   const router = useRouter()

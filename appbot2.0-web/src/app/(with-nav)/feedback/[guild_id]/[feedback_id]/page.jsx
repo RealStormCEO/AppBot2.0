@@ -6,6 +6,7 @@ import Head from 'next/head'
 import DashboardSidebar from '@/components/DashboardSidebar'
 import Topbar from '@/components/Topbar'
 import styles from './FeedbackView.module.css'  // new CSS module for this page
+export const dynamic = 'force-dynamic';
 
 export default function FeedbackViewPage() {
   const router = useRouter()
