@@ -10,7 +10,8 @@ export default function DashboardSidebar() {
   const links = [
     { href: `/dashboard/${guild_id}`, label: '📋 Forms' },
     { href: `/applications/${guild_id}`, label: '📝 Applications' },
-    { href: `/settings/${guild_id}`, label: '⚙️ Settings' }
+    { href: `/feedback/${guild_id}`, label: '💬 Feedback' },  // New feedback link
+    { href: `/settings/${guild_id}`, label: '⚙️ Settings' },
   ]
 
   return (

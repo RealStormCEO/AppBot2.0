@@ -1,4 +1,4 @@
-// File: C:\Users\oshad\OneDrive\Desktop\JS Code\WIP\AppBot2.0\appbot2.0-web-test\src\app\api\is-dev-user\route.js
+// File: C:\Users\oshad\OneDrive\Desktop\JS Code\WIP\AppBot2.0\appbot2.0-web\src\app\api\is-dev-user\route.js
 import * as entry from '../../../../../src/app/api/is-dev-user/route.js'
 import type { NextRequest } from 'next/server.js'
 

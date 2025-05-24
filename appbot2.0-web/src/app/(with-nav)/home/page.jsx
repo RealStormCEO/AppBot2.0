@@ -15,6 +15,10 @@ export default function HomePage() {
   const [currentFeedback, setCurrentFeedback] = useState(0)
 
   useEffect(() => {
+    document.title = 'Home - AppBot2.0'
+  }, [])
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentFeedback(prev => (prev + 1) % feedbacks.length)
     }, 4000)
@@ -26,16 +30,15 @@ export default function HomePage() {
       {/* Top Bar */}
       <nav className={styles.navbar}>
         <div className={styles.logoArea}>
-        <img src="/default-icon.jpg" alt="AppBot Logo" className={styles.logoImage} />
-        <span className={styles.brand}>AppBot2.0</span>
+          <img src="/default-icon.jpg" alt="AppBot Logo" className={styles.logoImage} />
+          <span className={styles.brand}>AppBot2.0</span>
         </div>
         <button
-            className={styles.loginButton}
-            onClick={() => signIn('discord')}
+          className={styles.loginButton}
+          onClick={() => signIn('discord')}
         >
-            Login
+          Login
         </button>
-
       </nav>
 
       {/* Hero Section */}
@@ -64,7 +67,7 @@ export default function HomePage() {
       <footer className={styles.footer}>
         {"© "}{new Date().getFullYear()} RealStormCo. All rights reserved. <br />
         Developed by RealStormCo | Idea by TazzoTezz for the AppBot2.0 Discord ecosystem.
-        </footer>
+      </footer>
     </div>
   )
 }

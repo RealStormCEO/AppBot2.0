@@ -1,0 +1,145 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/app/developer/dev-users/DevUsers.module.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************/
+.DevUsers_wrapper__DXx_a {
+  margin-left: 260px;
+  padding: 2rem;
+  color: white;
+  position: relative;
+}
+
+.DevUsers_title__LJT4e {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.DevUsers_headerRow__g5xqD {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.DevUsers_addIcon__w5Qy1 {
+  background-color: #5865f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.DevUsers_addIcon__w5Qy1:hover {
+  background-color: #4752c4;
+}
+
+.DevUsers_addUserBox__VZtxP {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.DevUsers_input__4pOVL {
+  flex: 1 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #1c1e22;
+  color: white;
+  min-width: 200px;
+}
+
+.DevUsers_addButton__LY_Id {
+  background-color: #2ecc71;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.DevUsers_cancelButton__CNmYp {
+  background-color: #ccc;
+  color: black;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.DevUsers_userList__WKw30 {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.DevUsers_userCard__4HHIC {
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr auto;
+  align-items: center;
+  background-color: #2b2d31;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.DevUsers_userCard__4HHIC input {
+  background-color: #1c1e22;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.DevUsers_actions__6sHdG {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.DevUsers_iconButton__ge3PH {
+  background-color: #5865f2;
+  color: white;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.DevUsers_deleteButton__Xo8Bf {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.DevUsers_saveButton__xB2pd {
+  background-color: #2ecc71;
+  color: white;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.DevUsers_editInput__guDd_ {
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: none;
+  background-color: #1c1e22;
+  color: white;
+}
+

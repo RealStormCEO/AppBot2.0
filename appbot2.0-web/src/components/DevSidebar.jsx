@@ -11,6 +11,7 @@ export default function DevSidebar() {
     { href: '/developer/servers', label: '🛡 Servers' },
     { href: '/developer/users', label: '👥 Users' },
     { href: '/developer/dev-users', label: '🧠 Dev Users' },
+    { href: '/developer/feedback', label: '💬 Feedback' },  // Added Feedback link here
     { href: '/servers', label: '🔙 Back to User Panel' }
   ]
 

@@ -1,4 +1,4 @@
-// File: C:\Users\oshad\OneDrive\Desktop\JS Code\WIP\AppBot2.0\appbot2.0-web-test\src\app\api\guilds\[guild_id]\roles\route.js
+// File: C:\Users\oshad\OneDrive\Desktop\JS Code\WIP\AppBot2.0\appbot2.0-web\src\app\api\guilds\[guild_id]\roles\route.js
 import * as entry from '../../../../../../../src/app/api/guilds/[guild_id]/roles/route.js'
 import type { NextRequest } from 'next/server.js'
 

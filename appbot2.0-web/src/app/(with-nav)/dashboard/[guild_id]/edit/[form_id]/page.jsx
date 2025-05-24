@@ -26,9 +26,17 @@ export default function EditFormPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [maxQuestionsModalVisible, setMaxQuestionsModalVisible] = useState(false)
 
-  // Fetch current user and plans like dashboard logic
   const [currentUser, setCurrentUser] = useState(null)
   const [plans, setPlans] = useState([])
+
+  // Set the document title dynamically based on guild_id and form_id
+  useEffect(() => {
+    if (guild_id && form_id) {
+      document.title = `Editing Form ${form_id} - ${guild_id} - AppBot 2.0`
+    } else {
+      document.title = 'Editing Form - AppBot 2.0'
+    }
+  }, [guild_id, form_id])
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -58,7 +66,8 @@ export default function EditFormPage() {
     fetchInitialData()
   }, [guild_id, form_id])
 
-  // Calculate maxQuestions from plans & currentUser plan
+  // Rest of your existing component logic below...
+
   const normalizedUserPlan = (currentUser?.plan || 'Free').trim().toLowerCase()
   const userPlanObj = plans.find(p => p.name.trim().toLowerCase() === normalizedUserPlan)
   const maxQuestions = userPlanObj?.max_questions || 5

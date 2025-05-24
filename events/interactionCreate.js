@@ -1,12 +1,36 @@
-const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
+const {
+  Events,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelType,
+  MessageFlags,
+} = require('discord.js');
 const db = require('../database/db');
 const detectAIContent = require('../utils/aiDetector');
-const { replacePlaceholders, cleanEmbed, convertToEmbedBuilder } = require('../utils/embedUtils');
+const {
+  replacePlaceholders,
+  cleanEmbed,
+  convertToEmbedBuilder,
+} = require('../utils/embedUtils');
+
+// Import your helper functions or define them below
+const {
+  openTicket,
+  closeTicket,
+  acceptApplication,
+  denyApplication,
+} = require('../utils/applicationActions'); // correct path and filename
 
 module.exports = {
   name: Events.InteractionCreate,
 
   async execute(interaction, client) {
+    // Initialize global maps if not exist
+    if (!global.appSessions) global.appSessions = new Map();
+    if (!global.appTimeouts) global.appTimeouts = new Map();
+
     // Handle slash commands
     if (interaction.isChatInputCommand()) {
       const command = client.commands.get(interaction.commandName);
@@ -16,8 +40,10 @@ module.exports = {
         await command.execute(interaction, client);
       } catch (err) {
         console.error(err);
-        if (!interaction.replied) {
-          await interaction.reply({ content: '❌ Error executing command.', ephemeral: true }).catch(() => {});
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction
+            .reply({ content: '❌ Error executing command.', flags: MessageFlags.Ephemeral })
+            .catch(() => {});
         }
       }
     }
@@ -25,22 +51,61 @@ module.exports = {
     // Handle buttons
     if (interaction.isButton()) {
       const userId = interaction.user.id;
-      const session = global.appSessions?.get(userId);
+      const session = global.appSessions.get(userId);
 
       // Cancel application at any point
       if (interaction.customId === 'app_cancel') {
-        global.appSessions?.delete(userId);
-        return interaction.reply({ content: '❌ Application canceled.', ephemeral: true });
+        // Clear timeout
+        const timeoutId = global.appTimeouts.get(userId);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          global.appTimeouts.delete(userId);
+        }
+
+        // Remove session
+        global.appSessions.delete(userId);
+
+        // Delete all related messages
+        const messages = global.appMessages.get(userId) ?? [];
+        for (const msg of messages) {
+          try {
+            await msg.delete();
+          } catch {}
+        }
+        global.appMessages.delete(userId);
+
+        // Also delete the cancel interaction message (confirmation buttons message)
+        try {
+          if (interaction.message) {
+            await interaction.message.delete();
+          }
+        } catch {}
+
+        // Reply only if not already replied/deferred
+        if (!interaction.replied && !interaction.deferred) {
+          return interaction.reply({ content: '❌ Application canceled.', flags: MessageFlags.Ephemeral });
+        }
+        return;
       }
 
       // Confirm application submission
       if (interaction.customId === 'app_confirm') {
         if (!session) {
-          return interaction.reply({ content: '❌ Session expired or not found.', ephemeral: true });
+          if (!interaction.replied && !interaction.deferred) {
+            return interaction.reply({ content: '❌ Session expired or not found.', flags: MessageFlags.Ephemeral });
+          }
+          return;
         }
 
         const { guildId, answers, formId } = session;
         const username = `${interaction.user.username}#${interaction.user.discriminator}`;
+
+        // Clear timeout since user confirmed
+        const timeout = global.appTimeouts.get(userId);
+        if (timeout) {
+          clearTimeout(timeout);
+          global.appTimeouts.delete(userId);
+        }
 
         await interaction.deferReply({ ephemeral: true });
 
@@ -80,15 +145,17 @@ module.exports = {
 
         const guildSettings = guildSettingsRows[0] || {};
         const autoDenyEnabled = !!guildSettings.auto_deny_enabled;
-        const autoDenyThreshold = (Number(guildSettings.auto_deny_threshold) || 0) / 100; // convert 0-100 to decimal 0-1
+        const autoDenyThreshold = (Number(guildSettings.auto_deny_threshold) || 0) / 100; // 0-100 to 0-1
         const dmDenyEnabled = !!guildSettings.dm_deny_enabled;
         const dmDenyEmbed = guildSettings.dm_deny_embed ? JSON.parse(guildSettings.dm_deny_embed) : null;
 
         // Format question scores for DB
-        const formattedScores = Object.entries(responseScores).map(([question, data]) => {
-          const escapedAnswer = data.answer.replace(/"/g, "'");
-          return `${question}:"${escapedAnswer}";${data.score.toFixed(3)}`;
-        }).join(',');
+        const formattedScores = Object.entries(responseScores)
+          .map(([question, data]) => {
+            const escapedAnswer = data.answer.replace(/"/g, "'");
+            return `${question}:"${escapedAnswer}";${data.score.toFixed(3)}`;
+          })
+          .join(',');
 
         if (autoDenyEnabled && autoDenyThreshold > 0 && averageScore < autoDenyThreshold) {
           // Auto Deny flow
@@ -104,8 +171,8 @@ module.exports = {
               JSON.stringify(answers),
               averageScore,
               formattedScores,
-              3,  // denied
-              1   // dm_sent = true
+              3, // denied
+              1, // dm_sent = true
             ]
           );
 
@@ -121,7 +188,10 @@ module.exports = {
                 '{server.id}': guildId,
               };
               const replacedEmbedJson = replacePlaceholders(dmDenyEmbed, replacements);
-              const embedObj = typeof replacedEmbedJson === 'string' ? JSON.parse(replacedEmbedJson) : replacedEmbedJson;
+              const embedObj =
+                typeof replacedEmbedJson === 'string'
+                  ? JSON.parse(replacedEmbedJson)
+                  : replacedEmbedJson;
               const cleanedEmbed = cleanEmbed(embedObj);
               if (cleanedEmbed) {
                 const embed = convertToEmbedBuilder(cleanedEmbed);
@@ -140,7 +210,7 @@ module.exports = {
         }
 
         // Normal pending submission
-        await db.execute(
+        const [insertResult] = await db.execute(
           `INSERT INTO applications
            (guild_id, form_id, user_id, username, responses, ai_score, question_scores, application_status, created_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
@@ -155,6 +225,9 @@ module.exports = {
             1, // pending
           ]
         );
+
+        // Get inserted application ID
+        const insertedAppId = insertResult.insertId;
 
         global.appSessions.delete(userId);
 
@@ -178,14 +251,14 @@ module.exports = {
         const logChannelId = formRows[0]?.log_channel_id;
 
         if (logChannelId) {
-          const logChannel = await client.channels.fetch(logChannelId).catch(err => {
+          const logChannel = await client.channels.fetch(logChannelId).catch((err) => {
             console.error('❌ Failed to fetch log channel:', err);
             return null;
           });
 
           if (logChannel && logChannel.isTextBased()) {
             const embed = new EmbedBuilder()
-              .setTitle(`📨 ${formTitle} Submitted`)
+              .setTitle(`📨 New Application - ${formTitle}`)
               .setDescription(`**User:** <@${userId}> (${username})`)
               .addFields(
                 Object.entries(responseScores).map(([q, data]) => {
@@ -195,98 +268,69 @@ module.exports = {
                   return {
                     name: `\u200b\n❓ ${q}`,
                     value: `\u200b\n📝 ${data.answer.slice(0, 900)}\n\n✍️ Words: **${wordCount}** | 🔡 Characters: **${charCount}**\n🤖 AI Detection Score: **${(data.score * 100).toFixed(1)}% human**`,
-                    inline: false
+                    inline: false,
                   };
                 })
               )
               .addFields({
                 name: '\n📊 Average AI Score',
                 value: `${(averageScore * 100).toFixed(1)}% human`,
-                inline: false
+                inline: false,
               })
-              .setFooter({ text: `User ID: ${userId}` })
+              .setFooter({ text: `User ID: ${userId} | Application ID: ${insertedAppId}` })
               .setTimestamp();
 
             const buttons = new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId(`accept_app_${insertedAppId}`)
+                .setLabel('✅ Accept')
+                .setStyle(ButtonStyle.Success),
+              new ButtonBuilder()
+                .setCustomId(`deny_app_${insertedAppId}`)
+                .setLabel('❌ Deny')
+                .setStyle(ButtonStyle.Danger),
               new ButtonBuilder()
                 .setCustomId(`open_ticket_${userId}_${formId}`)
                 .setLabel('Open ticket with user')
                 .setStyle(ButtonStyle.Primary)
             );
 
-            await logChannel.send({ embeds: [embed], components: [buttons] }).catch(err => {
+            await logChannel.send({ embeds: [embed], components: [buttons] }).catch((err) => {
               console.error('❌ Failed to send embed:', err);
             });
           }
         }
+        return;
       }
 
-      // Handle "Open ticket with user" button interaction
-      else if (interaction.customId?.startsWith('open_ticket_')) {
-        const parts = interaction.customId.split('_');
-        const ticketUserId = parts[2];
-        const formId = parts[3];
+      // Route other button presses to helper functions:
+
+      else if (interaction.customId.startsWith('open_ticket_')) {
+        await openTicket(interaction, client);
+        return;
+      }
+
+      else if (interaction.customId === 'close_ticket' || interaction.customId === 'confirm_close_ticket') {
+        await closeTicket(interaction);
+        return;
+      }
+
+      else if (interaction.customId.startsWith('accept_app_')) {
+        const applicationId = parseInt(interaction.customId.replace('accept_app_', ''));
         const guildId = interaction.guild.id;
+        await acceptApplication(client, interaction, applicationId, guildId, interaction.message);
+        return;
+      }
 
-        if (!interaction.guild) {
-          return interaction.reply({ content: '❌ This can only be used in a server.', ephemeral: true });
-        }
-
-        try {
-          const [applications] = await db.execute(
-            'SELECT username FROM applications WHERE user_id = ? AND form_id = ? AND guild_id = ?',
-            [ticketUserId, formId, guildId]
-          );
-
-          if (!applications.length) {
-            return interaction.reply({ content: '❌ Application data not found.', ephemeral: true });
-          }
-
-          const applicantUsername = applications[0].username;
-
-          const [formRows] = await db.execute(
-            'SELECT title FROM application_forms WHERE id = ? AND guild_id = ?',
-            [formId, guildId]
-          );
-
-          const formTitle = formRows[0]?.title || 'application';
-          const sanitizedTitle = formTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
-          const ticketChannelName = `${sanitizedTitle}-${applicantUsername.split('#')[0]}`.slice(0, 90);
-
-          const existingChannel = interaction.guild.channels.cache.find(ch =>
-            ch.name === ticketChannelName && ch.type === ChannelType.GuildText
-          );
-
-          if (existingChannel) {
-            return interaction.reply({ content: `❌ Ticket channel already exists: <#${existingChannel.id}>`, ephemeral: true });
-          }
-
-          const ticketChannel = await interaction.guild.channels.create({
-            name: ticketChannelName,
-            type: ChannelType.GuildText,
-            permissionOverwrites: [
-              {
-                id: interaction.guild.roles.everyone.id,
-                deny: ['ViewChannel']
-              },
-              {
-                id: ticketUserId,
-                allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory']
-              },
-              {
-                id: client.user.id,
-                allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageChannels']
-              }
-            ]
-          });
-
-          await interaction.reply({ content: `✅ Ticket channel created: <#${ticketChannel.id}>`, ephemeral: true });
-        } catch (err) {
-          console.error('❌ Error creating ticket channel:', err);
-          await interaction.reply({ content: '❌ Failed to create ticket channel.', ephemeral: true });
-        }
+      else if (interaction.customId.startsWith('deny_app_')) {
+        const applicationId = parseInt(interaction.customId.replace('deny_app_', ''));
+        const guildId = interaction.guild.id;
+        await denyApplication(client, interaction, applicationId, guildId, interaction.message);
+        return;
       }
     }
-  }
+  },
 };
+
+// Helper functions (openTicket, closeTicket, acceptApplication, denyApplication, sendAcceptDM, sendDenyDM) should be
+// defined here or imported from another module as in your setup

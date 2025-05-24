@@ -1,16 +1,14 @@
 {
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/api/is-dev-user/route": "app/api/is-dev-user/route.js",
-  "/api/guild-settings/[guildId]/route": "app/api/guild-settings/[guildId]/route.js",
   "/api/developer/current-user/route": "app/api/developer/current-user/route.js",
-  "/api/forms/[guild_id]/route": "app/api/forms/[guild_id]/route.js",
   "/api/applications/[guild_id]/route": "app/api/applications/[guild_id]/route.js",
   "/api/developer/plans/route": "app/api/developer/plans/route.js",
-  "/api/forms/[guild_id]/channels/route": "app/api/forms/[guild_id]/channels/route.js",
-  "/api/forms/[guild_id]/questions/[form_id]/route": "app/api/forms/[guild_id]/questions/[form_id]/route.js",
-  "/api/guilds/[guild_id]/roles/route": "app/api/guilds/[guild_id]/roles/route.js",
-  "/(with-nav)/applications/[guild_id]/page": "app/(with-nav)/applications/[guild_id]/page.js",
-  "/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page": "app/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page.js",
+  "/api/applications/[guild_id]/view/[id]/route": "app/api/applications/[guild_id]/view/[id]/route.js",
+  "/developer/dashboard/page": "app/developer/dashboard/page.js",
+  "/developer/users/page": "app/developer/users/page.js",
+  "/(with-nav)/dashboard/[guild_id]/page": "app/(with-nav)/dashboard/[guild_id]/page.js",
   "/(with-nav)/settings/[guild_id]/page": "app/(with-nav)/settings/[guild_id]/page.js",
-  "/(with-nav)/dashboard/[guild_id]/page": "app/(with-nav)/dashboard/[guild_id]/page.js"
+  "/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page": "app/(with-nav)/dashboard/[guild_id]/edit/[form_id]/page.js",
+  "/(with-nav)/applications/[guild_id]/page": "app/(with-nav)/applications/[guild_id]/page.js",
+  "/(with-nav)/applications/[guild_id]/view/[id]/page": "app/(with-nav)/applications/[guild_id]/view/[id]/page.js"
 }

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import styles from './Settings.module.css'
 import EmbedBuilder from '@/components/EmbedBuilder' // adjust path as needed
 
@@ -79,6 +79,14 @@ export default function SettingsPage() {
       fetchRoles()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guild_id])
+
+  useEffect(() => {
+    if (guild_id) {
+      document.title = `Settings - ${guild_id} - AppBot 2.0`
+    } else {
+      document.title = 'Settings - AppBot 2.0'
+    }
   }, [guild_id])
 
   const saveSettings = async (newSettings) => {
@@ -183,7 +191,7 @@ export default function SettingsPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>DM Settings</h1>
+      <h1 className={styles.title}>Settings</h1>
 
       <div className={styles.cardsWrapper}>
         {/* DM Settings Card */}
