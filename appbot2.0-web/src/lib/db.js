@@ -4,7 +4,7 @@ const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '', // your actual password if any
-  database: 'application_bot',
+  database: 'appbot2c_application_bot',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

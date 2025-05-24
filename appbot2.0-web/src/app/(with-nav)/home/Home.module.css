@@ -258,3 +258,24 @@
   background-color: #1e1f22;
   margin-top: 4rem;
 }
+
+.supportButton {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  background-color: #5865f2;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.supportButton:hover {
+  background-color: #4752c4;
+}

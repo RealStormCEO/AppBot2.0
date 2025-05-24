@@ -17,14 +17,37 @@ export default function ApplicationsPage() {
 
   const router = useRouter()
 
+  // Fetch applications + form titles together for display
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch applications first
         const res = await fetch(`/api/applications/${guild_id}`)
-        const data = await res.json()
-        setApplications(data)
+        const appsData = await res.json()
+
+        // Extract unique form_ids
+        const uniqueFormIds = [...new Set(appsData.map(app => app.form_id))]
+
+        // Fetch form titles for these form_ids
+        // Assumes you have an API endpoint to batch fetch form titles by IDs, adjust if needed
+        const formsRes = await fetch(`/api/forms/titles?ids=${uniqueFormIds.join(',')}`)
+        const formsData = await formsRes.json() // Expected format: [{ id, title }, ...]
+
+        // Map form_id to title for quick lookup
+        const formTitlesMap = {}
+        formsData.forEach(f => {
+          formTitlesMap[f.id] = f.title
+        })
+
+        // Attach form title to each application
+        const appsWithTitles = appsData.map(app => ({
+          ...app,
+          form_title: formTitlesMap[app.form_id] || 'Unknown Form'
+        }))
+
+        setApplications(appsWithTitles)
       } catch (err) {
-        console.error('Error loading applications:', err)
+        console.error('Error loading applications or form titles:', err)
       } finally {
         setLoading(false)
       }
@@ -132,6 +155,7 @@ export default function ApplicationsPage() {
                     <input type="checkbox" checked={selectAll} onChange={toggleSelectAll} />
                   </div>
                   <span>User</span>
+                  <span className={styles.formColumn}>Form</span> {/* New Form header */}
                   <span className={styles.scoreColumn}>AI Detection Score</span>
                   <span className={styles.submittedColumn}>Submitted</span>
                   <span>Status</span>
@@ -149,8 +173,13 @@ export default function ApplicationsPage() {
                         />
                       </div>
                       <span>{app.username}</span>
+                      <span className={styles.formColumn} title={app.form_title}>
+                        {app.form_title.length > 25
+                          ? app.form_title.slice(0, 22) + '...'
+                          : app.form_title}
+                      </span>
                       <span className={styles.scoreColumn}>
-                        {(Math.round(app.ai_score * 100) / 100).toFixed(2)}
+                        {(Math.round(app.ai_score * 100)).toFixed(1) + "%"}
                       </span>
                       <span className={styles.submittedColumn}>
                         {new Date(app.submitted_at).toLocaleString()}
@@ -160,12 +189,14 @@ export default function ApplicationsPage() {
                         <button
                           className={styles.iconButton}
                           onClick={() => router.push(`/applications/${guild_id}/view/${app.id}`)}
+                          title="View Application"
                         >
                           🔍
                         </button>
                         <button
                           className={styles.iconButtonDelete}
                           onClick={() => setConfirmDeleteId(app.id)}
+                          title="Delete Application"
                         >
                           🗑️
                         </button>

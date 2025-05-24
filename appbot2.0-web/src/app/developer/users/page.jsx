@@ -7,7 +7,8 @@ const expirationOptions = [
   { label: '1 Week', value: 7 },
   { label: '1 Month', value: 30 },
   { label: '6 Months', value: 182 },
-  { label: '1 Year', value: 365 }
+  { label: '1 Year', value: 365 },
+  { label: 'Developer', value: 9999 }
 ]
 
 const addTimeOptions = [

@@ -96,7 +96,7 @@ export default function ServersPage() {
     localStorage.setItem('invited_guild', guildId)
 
     const redirectUri = encodeURIComponent(`${window.location.origin}/servers/invite-complete`)
-    const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${BOT_ID}&scope=bot+applications.commands&permissions=8&guild_id=${guildId}&disable_guild_select=true&redirect_uri=${redirectUri}&response_type=code`
+    const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${BOT_ID}&scope=bot+applications.commands&permissions=8596544&guild_id=${guildId}&disable_guild_select=true&redirect_uri=${redirectUri}&response_type=code`
 
     window.location.href = inviteUrl
   }

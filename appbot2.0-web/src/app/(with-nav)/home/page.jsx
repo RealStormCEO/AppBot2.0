@@ -1,8 +1,12 @@
 'use client'
+
 import styles from './Home.module.css'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react'
+import { FaDiscord } from 'react-icons/fa'
+
+const SUPPORT_SERVER = process.env.NEXT_PUBLIC_SUPPORT_SERVER || '#'
 
 const feedbacks = [
   '🔥 "AppBot2.0 saved me hours setting up applications!" - RaidMaster88',
@@ -33,12 +37,26 @@ export default function HomePage() {
           <img src="/default-icon.jpg" alt="AppBot Logo" className={styles.logoImage} />
           <span className={styles.brand}>AppBot2.0</span>
         </div>
-        <button
-          className={styles.loginButton}
-          onClick={() => signIn('discord')}
-        >
-          Login
-        </button>
+
+        <div>
+          <a
+            href={SUPPORT_SERVER}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.supportButton}
+            style={{ marginRight: '12px' }}
+          >
+            Join Support Server
+          </a>
+
+          <button
+            className={styles.supportButton}
+            onClick={() => signIn('discord')}
+          >
+            <FaDiscord style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+            Login with Discord
+          </button>
+        </div>
       </nav>
 
       {/* Hero Section */}

@@ -1,9 +1,9 @@
 {
   "..\\app\\developer\\layout.jsx -> @/components/Topbar": {
-    "id": "..\\app\\developer\\layout.jsx -> @/components/Topbar",
+    "id": 43152,
     "files": [
-      "static/css/_app-pages-browser_src_components_Topbar_jsx.css",
-      "static/chunks/_app-pages-browser_src_components_Topbar_jsx.js"
+      "static/css/3d94e6428e08e145.css",
+      "static/chunks/152.3d15db3b2512b5a7.js"
     ]
   }
 }

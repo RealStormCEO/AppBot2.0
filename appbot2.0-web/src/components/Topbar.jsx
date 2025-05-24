@@ -5,6 +5,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import styles from './Topbar.module.css'
 
+const SUPPORT_SERVER = process.env.NEXT_PUBLIC_SUPPORT_SERVER || '#'
+
 export default function Topbar() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -108,49 +110,47 @@ export default function Topbar() {
   }, [session?.user?.id])
 
   // Countdown timer effect for expiration_date
-useEffect(() => {
-  if (!currentUser?.expiration_date) {
-    setTimeRemaining('')
-    return
-  }
-
-  function updateTime() {
-    const now = new Date()
-    const exp = new Date(currentUser.expiration_date)
-    let diff = exp - now
-
-    if (diff <= 0) {
-      setTimeRemaining('Expired')
+  useEffect(() => {
+    if (!currentUser?.expiration_date) {
+      setTimeRemaining('')
       return
     }
 
-    const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365))
-    diff -= years * (1000 * 60 * 60 * 24 * 365)
+    function updateTime() {
+      const now = new Date()
+      const exp = new Date(currentUser.expiration_date)
+      let diff = exp - now
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    diff -= days * (1000 * 60 * 60 * 24)
+      if (diff <= 0) {
+        setTimeRemaining('Expired')
+        return
+      }
 
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    diff -= hours * (1000 * 60 * 60)
+      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365))
+      diff -= years * (1000 * 60 * 60 * 24 * 365)
 
-    const minutes = Math.floor(diff / (1000 * 60))
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      diff -= days * (1000 * 60 * 60 * 24)
 
-    // inside updateTime function:
-    const parts = []
-    if (years > 0) parts.push(`${years}y`)
-    if (days > 0) parts.push(`${days}d`)
-    if (hours > 0) parts.push(`${hours}h`)
-    parts.push(`${minutes}m`)
+      const hours = Math.floor(diff / (1000 * 60 * 60))
+      diff -= hours * (1000 * 60 * 60)
 
-    setTimeRemaining(parts.join(', '))  // commas with spaces, no newlines
+      const minutes = Math.floor(diff / (1000 * 60))
 
+      const parts = []
+      if (years > 0) parts.push(`${years}y`)
+      if (days > 0) parts.push(`${days}d`)
+      if (hours > 0) parts.push(`${hours}h`)
+      parts.push(`${minutes}m`)
+
+      setTimeRemaining(parts.join(', '))
     }
 
-  updateTime()
-  const interval = setInterval(updateTime, 60 * 1000)
+    updateTime()
+    const interval = setInterval(updateTime, 60 * 1000)
 
-  return () => clearInterval(interval)
-}, [currentUser?.expiration_date])
+    return () => clearInterval(interval)
+  }, [currentUser?.expiration_date])
 
   if (status === 'loading') return null
 
@@ -190,10 +190,21 @@ useEffect(() => {
               <div><strong>Max Forms:</strong> {userPlanObj?.max_forms ?? 'N/A'}</div>
               <div><strong>Max Questions:</strong> {userPlanObj?.max_questions ?? 'N/A'}</div>
               <div>
-              <strong>Time Remaining:</strong><br />
-              <span>{timeRemaining || 'N/A'}</span>
+                <strong>Time Remaining:</strong><br />
+                <span>{timeRemaining || 'N/A'}</span>
               </div>
             </div>
+
+            {/* Support Server Button */}
+            <a
+              href={SUPPORT_SERVER}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.devButton}
+              style={{ textAlign: 'center' }}
+            >
+              🔗 Join Support Server
+            </a>
 
             {!onServersPage && (
               <button className={styles.devButton} onClick={() => router.push('/servers')}>
