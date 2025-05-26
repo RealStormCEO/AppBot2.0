@@ -48,6 +48,33 @@ module.exports = {
       }
     }
 
+if (interaction.isModalSubmit() && interaction.customId === 'apply_embed_modal') {
+  const title = interaction.fields.getTextInputValue('embedTitle')?.trim();
+  const description = interaction.fields.getTextInputValue('embedDescription')?.trim();
+  const footer = interaction.fields.getTextInputValue('embedFooter')?.trim();
+
+  const embed = new EmbedBuilder().setColor(0x2ecc71);
+  if (title) embed.setTitle(title);
+  if (description) embed.setDescription(description);
+  if (footer) embed.setFooter({ text: footer });
+
+  const button = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('start_application')
+      .setLabel('📩 Start Application')
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  await interaction.deferReply({ ephemeral: true });
+
+  // ✅ Acknowledge the interaction and respond in the same channel
+  await interaction.channel.send({
+    embeds: [embed],
+    components: [button],
+  });
+}
+
+
     // Handle buttons
     if (interaction.isButton()) {
       const userId = interaction.user.id;
@@ -87,6 +114,12 @@ module.exports = {
         }
         return;
       }
+
+if (interaction.customId === 'start_application') {
+  const { runApplicationFlow } = require('../utils/runApplicationFlow');
+  await runApplicationFlow(interaction, true);
+  return;
+}
 
       // Confirm application submission
       if (interaction.customId === 'app_confirm') {
